@@ -19,8 +19,7 @@ namespace Tim.Cquential.Core.Matching
             foreach (var item in sequence)
             {
                 //Add new match candidate starting on this item
-                var aggregators = query.AggregatorFactory.ToDictionary(kv => kv.Key, kv => kv.Value());
-                var newCandidate = new MatchCandidate<T>(aggregators);
+                var newCandidate = query.NewMatchCandidate();
                 matchCandidates.Add(new MatchCandidateWithPreviousState<T>(newCandidate));
 
                 //Add current leg to candidates and evaluate
@@ -33,11 +32,11 @@ namespace Tim.Cquential.Core.Matching
                     var result = query.IsMatch(candidate);
 
                     //Process closed candidates
-                    if (!result.Item2)
+                    if (!result.IsMutable)
                     {
                         closedCandidates.Add(candidateState);
 
-                        if (result.Item1)
+                        if (result.IsMatch)
                         {
                             completedMatches.Add(candidate.GetMatch());
                         }
@@ -48,7 +47,7 @@ namespace Tim.Cquential.Core.Matching
                     }
                     else if (counter == itemCount - 1)
                     {
-                        if (result.Item1)
+                        if (result.IsMatch)
                         {
                             completedMatches.Add(candidate.GetMatch());
                             break;
@@ -61,7 +60,7 @@ namespace Tim.Cquential.Core.Matching
                         
                     }
 
-                    candidateState.PreviousMatch = result.Item1 ? candidate.GetMatch() : null;
+                    candidateState.PreviousMatch = result.IsMatch ? candidate.GetMatch() : null;
                 }
 
                 //Remove closed

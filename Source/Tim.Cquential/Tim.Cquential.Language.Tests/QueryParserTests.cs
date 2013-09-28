@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 
 namespace Tim.Cquential.Language
 {
+    using Core;
     using Tokens;
 
     [TestClass]
@@ -19,14 +21,14 @@ namespace Tim.Cquential.Language
         [TestMethod]
         public void ParseExpressionWithConstants()
         {
-            Assert.Inconclusive("Not tested.");
+            var parser = GetParser();
+            var tokens = new Tokenizer().Tokenize("3 + 4 > 2 AND 4 / 2 <= 4");
 
-            //var parser = GetParser();
-            //var tokens = new Tokenizer().Tokenize("3 + 4 > 2 AND 4 / 2 <= 4");
+            var query = parser.Parse<object>(tokens);
 
-            //var query = parser.Parse<object>(tokens);
-
-            //Assert.IsTrue(query.Condition(null));
+            query.IsMatch(null)
+                .Should()
+                .Match<MatchStatus>(r => r.IsMatch && !r.IsMutable);
         }
 
         [TestMethod]
@@ -219,5 +221,11 @@ namespace Tim.Cquential.Language
             //Assert.That(query.ConditionExpression.GetBooleanMutability(context), Is.EqualTo(BooleanMutability.Fixed));
         }
 
+    }
+
+    internal class Leg
+    {
+        public double Speed { get; set; }
+        public double StartElevation { get; set; }
     }
 }

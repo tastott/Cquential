@@ -26,7 +26,7 @@ namespace Tim.Cquential.Language
             var tokenTreeRoot = _tokenTreeMaker.MakeTree(rpnTokens);
             IExpression<T> expression = null;// CreateExpressionTree<T>(tokenTreeRoot);
 
-            return new ExpressionQuery<T>(expression, null);
+            return new ExpressionWithAggregatorsQuery<T>(expression, null);
         }
 
         public IQuery<T> Parse<T>(string queryString)

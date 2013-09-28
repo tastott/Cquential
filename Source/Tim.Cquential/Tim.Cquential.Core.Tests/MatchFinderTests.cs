@@ -70,12 +70,19 @@ namespace Tim.Cquential.Core.Matching
         }
     }
 
-    internal class AddAggregator: IAggregator<int>
+    internal class SummingMatchCandidate : IMatchCandidate<int>
     {
         private int _sum;
+        private IList<int> _sequence;
+
+        public SummingMatchCandidate()
+        {
+            _sequence = new List<int>();
+        }
 
         public void Put(int item)
         {
+            _sequence.Add(item);
             _sum += item;
         }
 
@@ -83,7 +90,13 @@ namespace Tim.Cquential.Core.Matching
         {
 	        get { return _sum; }
         }
-}
+
+
+        public Match<int> GetMatch()
+        {
+            return new Match<int> { Sequence = _sequence.ToList() };
+        }
+    }
 
     internal class SumQuery : IQuery<int>
     {
@@ -94,22 +107,17 @@ namespace Tim.Cquential.Core.Matching
             _condition = condition;
         }
 
-        public Tuple<bool, bool> IsMatch(IMatchCandidate<int> candidate)
+        public MatchStatus IsMatch(IMatchCandidate<int> candidate)
         {
-            double value = candidate.GetAggregator("sequence").Value;
+            double value = (candidate as SummingMatchCandidate).Value;
+            var tuple = _condition(value);
 
-            return _condition(value);
+            return new MatchStatus(tuple.Item1, tuple.Item2);
         }
 
-        public IDictionary<string, Func<IAggregator<int>>> AggregatorFactory
+        public IMatchCandidate<int> NewMatchCandidate()
         {
-            get
-            {
-                return new Dictionary<string, Func<IAggregator<int>>>
-                {
-                    {"sequence", () => new AddAggregator()}
-                };
-            }
+            return new SummingMatchCandidate();
         }
     }
 }

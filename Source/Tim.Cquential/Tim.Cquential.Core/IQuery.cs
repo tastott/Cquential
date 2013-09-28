@@ -14,11 +14,8 @@ namespace Tim.Cquential.Core
         /// </summary>
         /// <param name="context"></param>
         /// <returns>Item1 is true if this is a match. Item2 is true if the match status is permanent.</returns>
-        Tuple<bool, bool> IsMatch(IMatchCandidate<T> candidate);
+        MatchStatus IsMatch(IMatchCandidate<T> candidate);
 
-        /// <summary>
-        /// The aggregators relevant to this query, keyed by name.
-        /// </summary>
-        IDictionary<string, Func<IAggregator<T>>> AggregatorFactory {get;}
+        IMatchCandidate<T> NewMatchCandidate();
     }
 }

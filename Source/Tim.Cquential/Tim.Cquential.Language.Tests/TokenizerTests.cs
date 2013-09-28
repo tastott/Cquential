@@ -180,7 +180,7 @@ namespace Tim.Cquential.Language
             var expectedTokens = expected.Select(tuple => new Token(tuple.Item2, tuple.Item1));
 
             tokens.Should()
-                .Equal(expectedTokens);
+                .Equal(expectedTokens, (a,b) => a.Type == b.Type && a.Value == b.Value);
         }
     }
 }
