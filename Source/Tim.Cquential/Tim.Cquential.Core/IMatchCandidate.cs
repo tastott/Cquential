@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Tim.Cquential.Core
 {
-    public interface IConditionContext<T>
+    public interface IMatchCandidate<T>
     {
+        void Put(T item);
         IAggregator<T> GetAggregator(string key);
+        IMatch<T> GetMatch();
     }
 }
