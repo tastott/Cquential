@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Tim.Cquential.Core
 {
-    public class Class1
+    public interface IMatch<T>
     {
+        IEnumerable<T> Sequence { get; }
     }
 }
