@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Tim.Cquential.Core.Queries
 {
     using Expressions;
+    using Matching;
 
     /// <summary>
     /// A query which evaluates matches using an expression tree.
@@ -31,7 +32,7 @@ namespace Tim.Cquential.Core.Queries
 
         public virtual IMatchCandidate<T> NewMatchCandidate()
         {
-            throw new NotImplementedException();
+            return new MatchCandidate<T>();
         }
     }
 }

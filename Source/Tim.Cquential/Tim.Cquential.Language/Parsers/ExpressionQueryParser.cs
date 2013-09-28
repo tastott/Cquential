@@ -16,6 +16,11 @@ namespace Tim.Cquential.Language.Parsers
     {
         private TokenTreeMaker _tokenTreeMaker;
 
+        public ExpressionQueryParser()
+        {
+            _tokenTreeMaker = new TokenTreeMaker(new TokenShunter());
+        }
+
         public ExpressionQueryParser(TokenTreeMaker tokenTreeMaker)
         {
             _tokenTreeMaker = tokenTreeMaker;
@@ -26,7 +31,7 @@ namespace Tim.Cquential.Language.Parsers
             var tokenTreeRoot = _tokenTreeMaker.MakeTree(rpnTokens);
             IExpression<T> expression = CreateExpressionTree<T>(tokenTreeRoot);
 
-            return new ExpressionWithAggregatorsQuery<T>(expression, null);
+            return new ExpressionQuery<T>(expression);
         }
 
         public IQuery<T> Parse<T>(string queryString)

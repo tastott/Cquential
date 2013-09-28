@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tim.RideAnalysis.Core", "Tim.RideAnalysis.Core\Tim.RideAnalysis.Core.csproj", "{B5436268-9718-4BFC-A4DE-839DEDCC53E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tim.RideAnalysis.Console", "Tim.RideAnalysis.Console\Tim.RideAnalysis.Console.csproj", "{7DDEB9AE-1393-47F1-A3F4-A36B32007D98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tim.RideAnalysis.Models", "Tim.RideAnalysis.Models\Tim.RideAnalysis.Models.csproj", "{BC04431D-0F06-4BBC-98B0-66A5B23D5DEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5436268-9718-4BFC-A4DE-839DEDCC53E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5436268-9718-4BFC-A4DE-839DEDCC53E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5436268-9718-4BFC-A4DE-839DEDCC53E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5436268-9718-4BFC-A4DE-839DEDCC53E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDEB9AE-1393-47F1-A3F4-A36B32007D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DDEB9AE-1393-47F1-A3F4-A36B32007D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DDEB9AE-1393-47F1-A3F4-A36B32007D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DDEB9AE-1393-47F1-A3F4-A36B32007D98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC04431D-0F06-4BBC-98B0-66A5B23D5DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC04431D-0F06-4BBC-98B0-66A5B23D5DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC04431D-0F06-4BBC-98B0-66A5B23D5DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC04431D-0F06-4BBC-98B0-66A5B23D5DEF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
