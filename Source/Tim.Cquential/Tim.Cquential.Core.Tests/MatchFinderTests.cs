@@ -13,7 +13,7 @@ namespace Tim.Cquential.Core.Matching
         public void FindFindsWholeSequenceMatch()
         {
             var sequence = new int[]{1,2,3};
-            var query = new SumQuery(s => Tuple.Create(s == 6, false));
+            var query = new SumQuery(s => Tuple.Create(s == 6, s==6));
             var finder = new MatchFinder<int>();
 
             var matches = finder.FindMatches(sequence, query);
@@ -26,23 +26,9 @@ namespace Tim.Cquential.Core.Matching
         public void FindFindsPartialMatch()
         {
             var sequence = new int[] { 4, 1, 2, 3, 4 };
-            var query = new SumQuery(s => Tuple.Create(s == 6, false));
+            var query = new SumQuery(s => Tuple.Create(s == 6, s==6));
             var finder = new MatchFinder<int>();
             var expected = new int[] { 1, 2, 3 };
-
-            var matches = finder.FindMatches(sequence, query);
-
-            matches.Should()
-                .OnlyContain(m => m.Sequence.SequenceEqual(expected));
-        }
-
-        [TestMethod]
-        public void FindFindsLongestConsecutiveMatch()
-        {
-            var sequence = new int[] { 0, 1, 2, 3, 4 };
-            var query = new SumQuery(s => Tuple.Create(s == 6, false));
-            var finder = new MatchFinder<int>();
-            var expected = new int[] { 0, 1, 2, 3 };
 
             var matches = finder.FindMatches(sequence, query);
 
@@ -54,7 +40,7 @@ namespace Tim.Cquential.Core.Matching
         public void FindFindsOverlappingMatches()
         {
             var sequence = new int[] { 1, 2, 3, 2, 1 };
-            var query = new SumQuery(s => Tuple.Create(s == 6, false));
+            var query = new SumQuery(s => Tuple.Create(s == 6, s==6));
             var finder = new MatchFinder<int>();
             var expected = new int[][] 
             { 
