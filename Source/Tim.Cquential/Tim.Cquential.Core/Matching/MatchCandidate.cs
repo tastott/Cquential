@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tim.Cquential.Core.Matching
 {
-    public class MatchCandidate<T> : IMatchCandidate<T>, IMatch<T>
+    public class MatchCandidate<T> : IMatchCandidate<T>
     {
         private IDictionary<string, IAggregator<T>> _aggregators;
         private IList<T> _sequence;
@@ -28,9 +28,12 @@ namespace Tim.Cquential.Core.Matching
             return _aggregators[key];
         }
 
-        public IMatch<T> GetMatch()
+        public Match<T> GetMatch()
         {
-            return this;
+            return new Match<T>
+            {
+                Sequence = _sequence.ToList()
+            };
         }
 
         public IEnumerable<T> Sequence

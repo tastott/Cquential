@@ -10,6 +10,6 @@ namespace Tim.Cquential.Core
     {
         void Put(T item);
         IAggregator<T> GetAggregator(string key);
-        IMatch<T> GetMatch();
+        Match<T> GetMatch();
     }
 }

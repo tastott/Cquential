@@ -8,10 +8,10 @@ namespace Tim.Cquential.Core.Matching
 {
     public class MatchFinder<T> : IMatchFinder<T>
     {
-        public IEnumerable<IMatch<T>> FindMatches(IEnumerable<T> sequence, IQuery<T> query)
+        public IEnumerable<Match<T>> FindMatches(IEnumerable<T> sequence, IQuery<T> query)
         {
-            var matchCandidates = new List<IMatchCandidate<T>>();
-            var completedMatches = new List<IMatch<T>>();
+            var matchCandidates = new List<MatchCandidateWithPreviousState<T>>();
+            var completedMatches = new List<Match<T>>();
 
             int counter = 0;
             int itemCount = sequence.Count();
@@ -21,30 +21,47 @@ namespace Tim.Cquential.Core.Matching
                 //Add new match candidate starting on this item
                 var aggregators = query.AggregatorFactory.ToDictionary(kv => kv.Key, kv => kv.Value());
                 var newCandidate = new MatchCandidate<T>(aggregators);
-                matchCandidates.Add(newCandidate);
+                matchCandidates.Add(new MatchCandidateWithPreviousState<T>(newCandidate));
 
                 //Add current leg to candidates and evaluate
-                var closedCandidates = new List<IMatchCandidate<T>>();
-                foreach (var candidate in matchCandidates)
+                var closedCandidates = new List<MatchCandidateWithPreviousState<T>>();
+                foreach (var candidateState in matchCandidates)
                 {
+                    var candidate = candidateState.Candidate;
+
                     candidate.Put(item);
                     var result = query.IsMatch(candidate);
 
                     //Process closed candidates
-                    if (result.Item2)
+                    if (!result.Item2)
                     {
-                        closedCandidates.Add(candidate);
+                        closedCandidates.Add(candidateState);
 
                         if (result.Item1)
                         {
                             completedMatches.Add(candidate.GetMatch());
                         }
+                        else if (candidateState.PreviousMatch != null)
+                        {
+                            completedMatches.Add(candidateState.PreviousMatch);
+                        }
                     }
-                    else if (counter == itemCount - 1 && result.Item1) //If this is the last leg, treat the first (longest) match as complete
+                    else if (counter == itemCount - 1)
                     {
-                        completedMatches.Add(candidate.GetMatch());
-                        break;
+                        if (result.Item1)
+                        {
+                            completedMatches.Add(candidate.GetMatch());
+                            break;
+                        }
+                        else if (candidateState.PreviousMatch != null)
+                        {
+                            completedMatches.Add(candidateState.PreviousMatch);
+                            break;
+                        }
+                        
                     }
+
+                    candidateState.PreviousMatch = result.Item1 ? candidate.GetMatch() : null;
                 }
 
                 //Remove closed
@@ -55,5 +72,16 @@ namespace Tim.Cquential.Core.Matching
 
             return completedMatches;
         }
+    }
+
+    internal class MatchCandidateWithPreviousState<T>
+    {
+        public MatchCandidateWithPreviousState(IMatchCandidate<T> candidate)
+        {
+            Candidate = candidate;
+        }
+
+        public IMatchCandidate<T> Candidate { get; private set; }
+        public Match<T> PreviousMatch { get; set; }
     }
 }
