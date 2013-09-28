@@ -39,6 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\AllExpression.cs" />
+    <Compile Include="Expressions\AndExpression.cs" />
+    <Compile Include="Expressions\BinaryBooleanOperationExpression.cs" />
+    <Compile Include="Expressions\BinaryOperationExpression.cs" />
+    <Compile Include="Expressions\ConstantExpression.cs" />
+    <Compile Include="Expressions\IExpression.cs" />
+    <Compile Include="Expressions\NumericToBooleanExpression.cs" />
+    <Compile Include="Expressions\NumericToNumericOperationExpression.cs" />
+    <Compile Include="Expressions\OrExpression.cs" />
     <Compile Include="IAggregator.cs" />
     <Compile Include="IMatchCandidate.cs" />
     <Compile Include="IMatch.cs" />
