@@ -246,8 +246,6 @@ namespace Tim.Cquential.Core.Expressions
 
         internal MutabilityMaker(int size)
         {
-            if (!typeof(TIn).IsEnum || !typeof(TOut).IsEnum) throw new Exception("Type parameter must be an enum");
-
             _mutabilities = new int[size,size];
             _size = size;
         }

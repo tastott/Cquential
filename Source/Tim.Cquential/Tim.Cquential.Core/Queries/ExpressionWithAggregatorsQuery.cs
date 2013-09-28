@@ -6,36 +6,26 @@ using System.Threading.Tasks;
 
 namespace Tim.Cquential.Core.Queries
 {
+    using Matching;
     using Expressions;
 
     /// <summary>
     /// A query which evaluates matches using an expression tree and aggregators.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ExpressionWithAggregatorsQuery<T> : IQuery<T>
+    public class ExpressionWithAggregatorsQuery<T> : ExpressionQuery<T>
     {
-        private IExpression<T> _expression;
+        protected IDictionary<string, Func<IAggregator<T>>> _aggregatorFactory;
 
         public ExpressionWithAggregatorsQuery(IExpression<T> expression, IDictionary<string, Func<IAggregator<T>>> aggregatorFactory)
+            :base(expression)
         {
-            _expression = expression;
-            AggregatorFactory = aggregatorFactory;
+            _aggregatorFactory = aggregatorFactory;
         }
 
-        public MatchStatus IsMatch(IMatchCandidate<T> candidate)
+        public override IMatchCandidate<T> NewMatchCandidate()
         {
-            var result = _expression.GetBoolValue(candidate);
-            var mutable = _expression.IsBooleanMutable(candidate);
-
-            return new MatchStatus(result, mutable);
-        }
-
-        public IDictionary<string, Func<IAggregator<T>>> AggregatorFactory { get; private set; }
-
-
-        public IMatchCandidate<T> NewMatchCandidate()
-        {
-            throw new NotImplementedException();
+            return new AggregatingMatchCandidate<T>(_aggregatorFactory.ToDictionary(kv => kv.Key, kv => kv.Value()));
         }
     }
 }

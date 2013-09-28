@@ -44,6 +44,8 @@
     <Compile Include="Expressions\BinaryBooleanOperationExpression.cs" />
     <Compile Include="Expressions\BinaryOperationExpression.cs" />
     <Compile Include="Expressions\ConstantExpression.cs" />
+    <Compile Include="Expressions\ContextExpression.cs" />
+    <Compile Include="Expressions\ExpressionFactory.cs" />
     <Compile Include="Expressions\IExpression.cs" />
     <Compile Include="Expressions\NumericToBooleanExpression.cs" />
     <Compile Include="Expressions\NumericToNumericOperationExpression.cs" />
@@ -54,10 +56,12 @@
     <Compile Include="Match.cs" />
     <Compile Include="IMatchFinder.cs" />
     <Compile Include="IQuery.cs" />
+    <Compile Include="Matching\AggregatingMatchCandidate.cs" />
     <Compile Include="Matching\MatchCandidate.cs" />
     <Compile Include="Matching\MatchFinder.cs" />
     <Compile Include="MatchStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\ExpressionQuery.cs" />
     <Compile Include="Queries\ExpressionWithAggregatorsQuery.cs" />
   </ItemGroup>
   <ItemGroup>

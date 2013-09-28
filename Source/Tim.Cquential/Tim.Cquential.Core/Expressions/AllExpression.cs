@@ -6,15 +6,16 @@ using System.Text;
 namespace Tim.Cquential.Core.Expressions
 {
     using Core;
+    using Matching;
 
     public class AllExpression<T> : IExpression<T>
     {
         private Func<object, object, object> _booleanOperation;
-        private Func<IMatchCandidate<T>, double[]> _leftValuesFunc;
-        private Func<IMatchCandidate<T>, double[]> _rightValuesFunc;
+        private Func<MatchCandidate<T>, double[]> _leftValuesFunc;
+        private Func<MatchCandidate<T>, double[]> _rightValuesFunc;
 
         public AllExpression(Func<object, object, object> booleanOperation,
-            Func<IMatchCandidate<T>, double[]> leftValuesFunc, Func<IMatchCandidate<T>, double[]> rightValuesFunc)
+            Func<MatchCandidate<T>, double[]> leftValuesFunc, Func<MatchCandidate<T>, double[]> rightValuesFunc)
         {
             _booleanOperation = booleanOperation;
             _leftValuesFunc = leftValuesFunc;
@@ -26,8 +27,8 @@ namespace Tim.Cquential.Core.Expressions
 
         public bool GetBoolValue(IMatchCandidate<T> context)
         {
-            var leftLegs = _leftValuesFunc(context);
-            var rightLegs = _rightValuesFunc(context);
+            var leftLegs = _leftValuesFunc(context as MatchCandidate<T>);
+            var rightLegs = _rightValuesFunc(context as MatchCandidate<T>);
 
             if (leftLegs.Length != rightLegs.Length) throw new Exception("Comparison on unmatched number of values");
 

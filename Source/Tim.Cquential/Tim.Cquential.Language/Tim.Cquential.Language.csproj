@@ -43,7 +43,7 @@
     <Compile Include="ITokenizer.cs" />
     <Compile Include="ITokenShunter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryParser.cs" />
+    <Compile Include="Parsers\ExpressionQueryParser.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="Tokens\Tokenizer.cs" />
     <Compile Include="Tokens\TokenShunter.cs" />

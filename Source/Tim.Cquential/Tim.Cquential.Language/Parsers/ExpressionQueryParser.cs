@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Tim.Cquential.Language
+namespace Tim.Cquential.Language.Parsers
 {
     using Tokens;
     using Core;
@@ -12,11 +12,11 @@ namespace Tim.Cquential.Language
     using Core.Queries;
     using Utilities;
 
-    public class QueryParser : IQueryParser
+    public class ExpressionQueryParser : IQueryParser
     {
         private TokenTreeMaker _tokenTreeMaker;
 
-        public QueryParser(TokenTreeMaker tokenTreeMaker)
+        public ExpressionQueryParser(TokenTreeMaker tokenTreeMaker)
         {
             _tokenTreeMaker = tokenTreeMaker;
         }
@@ -24,7 +24,7 @@ namespace Tim.Cquential.Language
         public IQuery<T> Parse<T>(IEnumerable<Token> rpnTokens)
         {
             var tokenTreeRoot = _tokenTreeMaker.MakeTree(rpnTokens);
-            IExpression<T> expression = null;// CreateExpressionTree<T>(tokenTreeRoot);
+            IExpression<T> expression = CreateExpressionTree<T>(tokenTreeRoot);
 
             return new ExpressionWithAggregatorsQuery<T>(expression, null);
         }
@@ -37,7 +37,7 @@ namespace Tim.Cquential.Language
             return Parse<T>(tokens);
         }
 
-        /* private IExpression<T> CreateExpressionTree<T>(TokenTreeNode root)
+        private IExpression<T> CreateExpressionTree<T>(TokenTreeNode root)
         {
             switch (root.Type)
             {
@@ -46,17 +46,17 @@ namespace Tim.Cquential.Language
                     if (!double.TryParse(root.Value, out value))
                         throw new Exception(String.Format("Value could not be converted to a double: '{0}'", root.Value));
 
-                    return ExpressionFactory.Constant(value);
+                    return ExpressionFactory.Constant<T>(value);
 
                 case TokenType.Aggregate:
-                    return ParseAggregate(root.Value);
+                    return ParseAggregate<T>(root.Value);
 
                 case TokenType.Function:
-                    return MakeFunctionExpression(root);
+                    return MakeFunctionExpression<T>(root);
 
                 case TokenType.Operator:
-                    var expLeft = CreateExpressionTree(root.Children[0]);
-                    var expRight = CreateExpressionTree(root.Children[1]);
+                    var expLeft = CreateExpressionTree<T>(root.Children[0]);
+                    var expRight = CreateExpressionTree<T>(root.Children[1]);
                     return ExpressionFactory.Operation(root.Value, expLeft, expRight);
 
                 default:
@@ -65,7 +65,7 @@ namespace Tim.Cquential.Language
 
               
         }
-
+        
         private IExpression<T> MakeFunctionExpression<T>(TokenTreeNode root)
         {
             var aggregatePattern = new Regex(@"^\[\*\]\.([A-Za-z0-9]+)$");
@@ -83,13 +83,13 @@ namespace Tim.Cquential.Language
                 case "COUNT":
                     if (child.Type != TokenType.Aggregate) throw new Exception(String.Format("Cannot apply MAX function to parameter type '{0}'", child.Type.ToString()));
                     if(!aggregatePattern.TryMatch(child.Value, out match)) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
-                    return ExpressionFactory.Aggregate(functionName, match.Groups[1].Value);
+                    return ExpressionFactory.Aggregate<T>(functionName, match.Groups[1].Value);
 
                 case "ALL":
                     var left = ParseRelativeLeg(child.Children[0].Value);
                     var right = ParseRelativeLeg(child.Children[1].Value);
 
-                    return ExpressionFactory.AllTrue(child.Value, left.Item1, left.Item2, right.Item1, right.Item2);
+                    return ExpressionFactory.AllTrue<T>(child.Value, left.Item1, left.Item2, right.Item1, right.Item2);
 
 
                 default:
@@ -97,6 +97,7 @@ namespace Tim.Cquential.Language
             }
         }
 
+        
         private Tuple<int, string> ParseRelativeLeg(string input)
         {
              var relativeIndexPattern = new Regex(@"^\[x(-[0-9]+)?\]\.([A-Za-z]+)$");
@@ -111,7 +112,7 @@ namespace Tim.Cquential.Language
             return Tuple.Create(offset, match.Groups[2].Value);
         }
 
-        private Expression ParseAggregate(string input)
+        private IExpression<T> ParseAggregate<T>(string input)
         {
             var indexedLegPattern = new Regex(@"^\[([A-Za-z0-9-]+)\]\.([A-Za-z0-9]+)$");
             var aggregatePattern = new Regex(@"^([A-Za-z0-9]+)\(\[\*\]\.([A-Za-z0-9]+)\)$");
@@ -123,7 +124,7 @@ namespace Tim.Cquential.Language
                 string indexString = match.Groups[1].Value;
                 string memberName = match.Groups[2].Value;
 
-                Func<Leg, double> legMemberFunction = GetMemberFunc(memberName);
+                //Func<T, double> legMemberFunction = GetMemberFunc(memberName);
 
                 var relativeIndexPattern = new Regex("^[A-Za-z](-[0-9]+)?$"); //TODO: Extend to positive offset
                 int staticIndex;
@@ -140,7 +141,7 @@ namespace Tim.Cquential.Language
                 }
                 else if (int.TryParse(indexString, out staticIndex))
                 {
-                    return ExpressionFactory.StaticLegProperty(staticIndex, memberName); // context => legMemberFunction(context.Legs[staticIndex]);
+                    return ExpressionFactory.StaticLegProperty<T>(staticIndex, memberName); // context => legMemberFunction(context.Legs[staticIndex]);
                 }
                 else throw new Exception("Unrecognised indexed leg reference");
 
@@ -150,23 +151,23 @@ namespace Tim.Cquential.Language
                 string functionName = match.Groups[1].Value;
                 string memberName = match.Groups[2].Value;
 
-                return ExpressionFactory.Aggregate(functionName, memberName);
+                return ExpressionFactory.Aggregate<T>(functionName, memberName);
             }
             else throw new Exception(String.Format("Input not parseable: {0}", input));
         }
 
-        private Func<Leg, double> GetMemberFunc(string name)
-        {
-            //TODO: Make this less shit.
-            switch (name)
-            {
-                case "Speed":
-                    return l => l.Speed;
-                case "StartElevation":
-                    return l => l.StartElevation;
-                default:
-                    throw new Exception(String.Format("Member name not recognised: {0}", name));
-            }
-        }*/
+        //private Func<T, double> GetMemberFunc<T>(string name)
+        //{
+        //    //TODO: Make this less shit.
+        //    switch (name)
+        //    {
+        //        case "Speed":
+        //            return l => l.Speed;
+        //        case "StartElevation":
+        //            return l => l.StartElevation;
+        //        default:
+        //            throw new Exception(String.Format("Member name not recognised: {0}", name));
+        //    }
+        //}
     }
 }

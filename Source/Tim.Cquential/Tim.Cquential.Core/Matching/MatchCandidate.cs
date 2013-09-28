@@ -8,24 +8,16 @@ namespace Tim.Cquential.Core.Matching
 {
     public class MatchCandidate<T> : IMatchCandidate<T>
     {
-        private IDictionary<string, IAggregator<T>> _aggregators;
-        private IList<T> _sequence;
+        protected IList<T> _sequence;
 
-        public MatchCandidate(IDictionary<string, IAggregator<T>> aggregators)
+        public MatchCandidate()
         {
-            _aggregators = aggregators;
             _sequence = new List<T>();
         }
 
-        public void Put(T item)
+        public virtual void Put(T item)
         {
             _sequence.Add(item);
-            foreach (var a in _aggregators.Values) a.Put(item);
-        }
-
-        public IAggregator<T> GetAggregator(string key)
-        {
-            return _aggregators[key];
         }
 
         public Match<T> GetMatch()
@@ -36,7 +28,7 @@ namespace Tim.Cquential.Core.Matching
             };
         }
 
-        public IEnumerable<T> Sequence
+        public virtual IEnumerable<T> Sequence
         {
             get { return _sequence; }
         }

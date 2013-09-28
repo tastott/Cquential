@@ -16,7 +16,7 @@ namespace Tim.Cquential.Core.Matching
             {
                 {"abc", new Mock<IAggregator<int>>().Object}
             };
-            var candidate = new MatchCandidate<int>(aggregators);
+            var candidate = new AggregatingMatchCandidate<int>(aggregators);
 
             candidate.GetAggregator("abc")
                 .Should()
@@ -31,7 +31,7 @@ namespace Tim.Cquential.Core.Matching
             {
                 {"abc", aggregatorMocker.Object}
             };
-            var candidate = new MatchCandidate<int>(aggregators);
+            var candidate = new AggregatingMatchCandidate<int>(aggregators);
 
             candidate.Put(1);
 
@@ -42,7 +42,7 @@ namespace Tim.Cquential.Core.Matching
         public void GetMatchGetsMatchWithPutSequence()
         {
             var aggregators = new Dictionary<string, IAggregator<int>>();
-            var candidate = new MatchCandidate<int>(aggregators);
+            var candidate = new AggregatingMatchCandidate<int>(aggregators);
             var expected = new int[] { 1, 2, 3 };
 
             candidate.Put(1);
