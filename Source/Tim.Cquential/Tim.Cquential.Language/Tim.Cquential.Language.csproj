@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EF97E182-1F01-4919-BF60-205276BD4B74}</ProjectGuid>
+    <ProjectGuid>{F222378E-BBB8-4957-A35D-26B7D6688C64}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tim.Cquential.Core</RootNamespace>
-    <AssemblyName>Tim.Cquential.Core</AssemblyName>
+    <RootNamespace>Tim.Cquential.Language</RootNamespace>
+    <AssemblyName>Tim.Cquential.Language</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,27 +39,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Expressions\AllExpression.cs" />
-    <Compile Include="Expressions\AndExpression.cs" />
-    <Compile Include="Expressions\BinaryBooleanOperationExpression.cs" />
-    <Compile Include="Expressions\BinaryOperationExpression.cs" />
-    <Compile Include="Expressions\ConstantExpression.cs" />
-    <Compile Include="Expressions\IExpression.cs" />
-    <Compile Include="Expressions\NumericToBooleanExpression.cs" />
-    <Compile Include="Expressions\NumericToNumericOperationExpression.cs" />
-    <Compile Include="Expressions\Operators.cs" />
-    <Compile Include="Expressions\OrExpression.cs" />
-    <Compile Include="IAggregator.cs" />
-    <Compile Include="IMatchCandidate.cs" />
-    <Compile Include="Match.cs" />
-    <Compile Include="IMatchFinder.cs" />
-    <Compile Include="IQuery.cs" />
-    <Compile Include="Matching\MatchCandidate.cs" />
-    <Compile Include="Matching\MatchFinder.cs" />
+    <Compile Include="IQueryParser.cs" />
+    <Compile Include="ITokenizer.cs" />
+    <Compile Include="ITokenShunter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queries\ExpressionQuery.cs" />
+    <Compile Include="QueryParser.cs" />
+    <Compile Include="Token.cs" />
+    <Compile Include="Tokens\Tokenizer.cs" />
+    <Compile Include="Tokens\TokenShunter.cs" />
+    <Compile Include="Tokens\TokenTreeMaker.cs" />
+    <Compile Include="Tokens\TokenTreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Tim.Cquential.Core\Tim.Cquential.Core.csproj">
+      <Project>{ef97e182-1f01-4919-bf60-205276bd4b74}</Project>
+      <Name>Tim.Cquential.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tim.Cquential.Utilities\Tim.Cquential.Utilities.csproj">
       <Project>{b5495204-147f-4030-a586-c02c3fb2d3df}</Project>
       <Name>Tim.Cquential.Utilities</Name>
