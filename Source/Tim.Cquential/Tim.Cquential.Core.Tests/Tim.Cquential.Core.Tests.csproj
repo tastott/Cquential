@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="MatchCandidateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MatchFinderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

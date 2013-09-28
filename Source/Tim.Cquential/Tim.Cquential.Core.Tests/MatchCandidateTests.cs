@@ -4,10 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using FluentAssertions;
 
-namespace Tim.Cquential.Core
+namespace Tim.Cquential.Core.Matching
 {
-    using Matching;
-
     [TestClass]
     public class MatchCandidateTests
     {

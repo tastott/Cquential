@@ -8,7 +8,7 @@ namespace Tim.Cquential.Core.Matching
 {
     public class MatchFinder<T> : IMatchFinder<T>
     {
-        public IEnumerable<IMatch<T>> FindMatches(IEnumerable<T> seqeunce, IQuery<T> query)
+        public IEnumerable<IMatch<T>> FindMatches(IEnumerable<T> sequence, IQuery<T> query)
         {
             throw new NotImplementedException();
         }
