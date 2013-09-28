@@ -42,41 +42,41 @@ namespace Tim.Cquential.Core.Expressions
             else throw new Exception(String.Format("Invalid combination of return and operand types: '{0}' and '{1}'", returnType.Name, operandType.Name));
         }
 
-        public static IExpression<T> StaticLegProperty<T>(int itemIndex, string propertyName)
+        public static IExpression<T> StaticItemMember<T>(int itemIndex, string memberName)
         {
-            var propertyFunc = GetMemberFunc<T>(propertyName);
+            var memberFunc = GetMemberFunc<T>(memberName);
 
-            return new ContextExpression<T>(c => propertyFunc(c.Sequence.ToList()[itemIndex]), NumericMutability.Fixed);
+            return new ContextExpression<T>(c => memberFunc(c.Sequence.ToList()[itemIndex]), NumericMutability.Fixed);
         }
 
-        public static IExpression<T> AllTrue<T>(string @operator, int leftLegOffset, string leftLegProperty, int rightLegOffset, string rightLegProperty)
+        public static IExpression<T> AllTrue<T>(string @operator, int leftItemOffset, string leftItemMember, int rightItemOffset, string rightItemMember)
         {
             var operationFunc = Operators.GetOperationFunc(@operator);
-            var leftLegPropertyFunc = GetMemberFunc<T>(leftLegProperty);
-            var rightLegPropertyFunc = GetMemberFunc<T>(rightLegProperty);
+            var leftItemMemberFunc = GetMemberFunc<T>(leftItemMember);
+            var rightItemMemberFunc = GetMemberFunc<T>(rightItemMember);
 
-            if (leftLegOffset != 0 || rightLegOffset != -1) throw new Exception("Offsets not supported");
+            if (leftItemOffset != 0 || rightItemOffset != -1) throw new Exception("Offsets not supported");
 
-            Func<MatchCandidate<T>, double[]> leftValuesFunc = c => c.Sequence.Skip(1).Select(l => leftLegPropertyFunc(l)).ToArray();
-            Func<MatchCandidate<T>, double[]> rightValuesFunc = c => c.Sequence.Take(c.Sequence.Count() - 1).Select(l => rightLegPropertyFunc(l)).ToArray();
+            Func<MatchCandidate<T>, double[]> leftValuesFunc = c => c.Sequence.Skip(1).Select(l => leftItemMemberFunc(l)).ToArray();
+            Func<MatchCandidate<T>, double[]> rightValuesFunc = c => c.Sequence.Take(c.Sequence.Count() - 1).Select(l => rightItemMemberFunc(l)).ToArray();
 
             return new AllExpression<T>(operationFunc, leftValuesFunc, rightValuesFunc);
         }
 
-        public static IExpression<T> Aggregate<T>(string functionName, string propertyName)
+        public static IExpression<T> Aggregate<T>(string functionName, string memberName)
         {
-            var propertyFunc = GetMemberFunc<T>(propertyName);
+            var memberFunc = GetMemberFunc<T>(memberName);
 
             switch (functionName)
             {
                 case "MAX":
-                    return new ContextExpression<T>(c => c.Sequence.Max(l => propertyFunc(l)), NumericMutability.Increasable); 
+                    return new ContextExpression<T>(c => c.Sequence.Max(l => memberFunc(l)), NumericMutability.Increasable); 
 
                 case "MIN":
-                    return new ContextExpression<T>(c => c.Sequence.Min(l => propertyFunc(l)), NumericMutability.Decreaseable);
+                    return new ContextExpression<T>(c => c.Sequence.Min(l => memberFunc(l)), NumericMutability.Decreaseable);
 
                 case "AVG":
-                    return new ContextExpression<T>(c => c.Sequence.Average(l => propertyFunc(l)), NumericMutability.CanIncreaseOrDecrease);
+                    return new ContextExpression<T>(c => c.Sequence.Average(l => memberFunc(l)), NumericMutability.CanIncreaseOrDecrease);
 
                 case "COUNT":
                     return new ContextExpression<T>(c => c.Sequence.Count(), NumericMutability.Increasable);
@@ -88,22 +88,11 @@ namespace Tim.Cquential.Core.Expressions
 
         private static Func<T, double> GetMemberFunc<T>(string name)
         {
-            //TODO: Make this less shit.
-            //switch (name)
-            //{
-            //    case "Speed":
-            //        return l => l.Speed;
-            //    case "StartElevation":
-            //        return l => l.StartElevation;
-            //    default:
-            //        throw new Exception(String.Format("Member name not recognised: {0}", name));
-            //}
+            var memberInfo = typeof(T).GetMember(name)[0];
 
-            var thing = typeof(T).GetMember(name)[0];
-
-            var parameterExpression = Expression.Parameter(typeof(T));
-            var memExp = Expression.MakeMemberAccess(parameterExpression, thing);
-            var lambdaExp = Expression.Lambda<Func<T, double>>(memExp, parameterExpression);
+            var parameterExp = Expression.Parameter(typeof(T));
+            var memExp = Expression.MakeMemberAccess(parameterExp, memberInfo);
+            var lambdaExp = Expression.Lambda<Func<T, double>>(memExp, parameterExp);
 
             return lambdaExp.Compile();
 

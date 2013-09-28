@@ -86,8 +86,8 @@ namespace Tim.Cquential.Language.Parsers
                     return ExpressionFactory.Aggregate<T>(functionName, match.Groups[1].Value);
 
                 case "ALL":
-                    var left = ParseRelativeLeg(child.Children[0].Value);
-                    var right = ParseRelativeLeg(child.Children[1].Value);
+                    var left = ParseRelativeItem(child.Children[0].Value);
+                    var right = ParseRelativeItem(child.Children[1].Value);
 
                     return ExpressionFactory.AllTrue<T>(child.Value, left.Item1, left.Item2, right.Item1, right.Item2);
 
@@ -98,13 +98,13 @@ namespace Tim.Cquential.Language.Parsers
         }
 
         
-        private Tuple<int, string> ParseRelativeLeg(string input)
+        private Tuple<int, string> ParseRelativeItem(string input)
         {
              var relativeIndexPattern = new Regex(@"^\[x(-[0-9]+)?\]\.([A-Za-z]+)$");
              System.Text.RegularExpressions.Match match;
 
              if (!relativeIndexPattern.TryMatch(input, out match))
-                        throw new Exception(String.Format("Cannot parse input as relative leg reference: '{0}'", input));
+                        throw new Exception(String.Format("Cannot parse input as relative item reference: '{0}'", input));
 
             int offset = 0;
             if(match.Groups[1].Success) offset = int.Parse(match.Groups[1].Value);
@@ -114,17 +114,15 @@ namespace Tim.Cquential.Language.Parsers
 
         private IExpression<T> ParseAggregate<T>(string input)
         {
-            var indexedLegPattern = new Regex(@"^\[([A-Za-z0-9-]+)\]\.([A-Za-z0-9]+)$");
+            var indexedItemPattern = new Regex(@"^\[([A-Za-z0-9-]+)\]\.([A-Za-z0-9]+)$");
             var aggregatePattern = new Regex(@"^([A-Za-z0-9]+)\(\[\*\]\.([A-Za-z0-9]+)\)$");
 
             System.Text.RegularExpressions.Match match = null;
 
-            if (indexedLegPattern.TryMatch(input, out match))
+            if (indexedItemPattern.TryMatch(input, out match))
             {
                 string indexString = match.Groups[1].Value;
                 string memberName = match.Groups[2].Value;
-
-                //Func<T, double> legMemberFunction = GetMemberFunc(memberName);
 
                 var relativeIndexPattern = new Regex("^[A-Za-z](-[0-9]+)?$"); //TODO: Extend to positive offset
                 int staticIndex;
@@ -141,9 +139,9 @@ namespace Tim.Cquential.Language.Parsers
                 }
                 else if (int.TryParse(indexString, out staticIndex))
                 {
-                    return ExpressionFactory.StaticLegProperty<T>(staticIndex, memberName); // context => legMemberFunction(context.Legs[staticIndex]);
+                    return ExpressionFactory.StaticItemMember<T>(staticIndex, memberName);
                 }
-                else throw new Exception("Unrecognised indexed leg reference");
+                else throw new Exception("Unrecognised indexed item reference");
 
             }
             else if (aggregatePattern.TryMatch(input, out match))
@@ -155,19 +153,5 @@ namespace Tim.Cquential.Language.Parsers
             }
             else throw new Exception(String.Format("Input not parseable: {0}", input));
         }
-
-        //private Func<T, double> GetMemberFunc<T>(string name)
-        //{
-        //    //TODO: Make this less shit.
-        //    switch (name)
-        //    {
-        //        case "Speed":
-        //            return l => l.Speed;
-        //        case "StartElevation":
-        //            return l => l.StartElevation;
-        //        default:
-        //            throw new Exception(String.Format("Member name not recognised: {0}", name));
-        //    }
-        //}
     }
 }
