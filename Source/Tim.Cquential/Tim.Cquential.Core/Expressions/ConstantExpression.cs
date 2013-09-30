@@ -35,5 +35,13 @@ namespace Tim.Cquential.Core.Expressions
         {
             throw new Exception("ConstantExpression cannot return a value of type bool");
         }
+
+        public override bool Equals(object obj)
+        {
+            var that = obj as ConstantExpression<T>;
+
+            if (that != null) return this._value == that._value;
+            else return false;
+        }
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Tim.Cquential.Core.Expressions
+namespace Tim.Cquential.Core.Expressions.BooleanToBooleanOperations
 {
     using Core;
 
-    public class OrExpression<T> : BinaryBooleanOperationExpression<T>
+    public class OrExpression<T> : AbstractBooleanToBooleansOperationExpression<T>
     {
         public OrExpression(IExpression<T> left, IExpression<T> right)
             :base(left,right){}
@@ -35,6 +35,14 @@ namespace Tim.Cquential.Core.Expressions
             else if (!leftValue && !rightValue && !leftMutability && !rightMutability)
                 return false;
             else return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var that = obj as OrExpression<T>;
+
+            if (that != null) return this._left.Equals(that._left) && this._right.Equals(that._right);
+            else return false;
         }
     }
 }

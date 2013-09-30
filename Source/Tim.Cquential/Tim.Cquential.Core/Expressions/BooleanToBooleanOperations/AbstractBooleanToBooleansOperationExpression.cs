@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tim.Cquential.Core.Expressions
+namespace Tim.Cquential.Core.Expressions.BooleanToBooleanOperations
 {
-    public abstract class BinaryBooleanOperationExpression<T> : IExpression<T>
+    public abstract class AbstractBooleanToBooleansOperationExpression<T> : IExpression<T>
     {
         protected IExpression<T> _left;
         protected IExpression<T> _right;
 
-        public BinaryBooleanOperationExpression(IExpression<T> left, IExpression<T> right)
+        public AbstractBooleanToBooleansOperationExpression(IExpression<T> left, IExpression<T> right)
         {
             _left = left;
             _right = right;

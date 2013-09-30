@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tim.Cquential.Language.Fluent
 {
     [TestClass]
-    public class FluentExpressionTest
+    public class FluentExpressionTests
     {
         [TestMethod]
         public void FluentExpressionTest()

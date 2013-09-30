@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Linq.Expressions;
 
 namespace Tim.Cquential.Core.Expressions
 {
@@ -40,6 +41,25 @@ namespace Tim.Cquential.Core.Expressions
         public bool IsBooleanMutable(IMatchCandidate<T> context)
         {
             throw new NotImplementedException();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var that = obj as ContextExpression<T>;
+
+            if (that != null) return this._valueFunc.Equals(that._valueFunc);
+            else return false;
+        }
+
+        protected static Func<T, double> GetMemberFunction(string memberName)
+        {
+            var memberInfo = typeof(T).GetMember(memberName)[0];
+
+            var parameterExp = Expression.Parameter(typeof(T));
+            var memExp = Expression.MakeMemberAccess(parameterExp, memberInfo);
+            var lambdaExp = Expression.Lambda<Func<T, double>>(memExp, parameterExp);
+
+            return lambdaExp.Compile();
         }
     }
 }

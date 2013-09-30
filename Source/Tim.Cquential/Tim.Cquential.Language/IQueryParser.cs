@@ -7,9 +7,9 @@ namespace Tim.Cquential.Language
 {
     using Core;
 
-    public interface IQueryParser
+    public interface IQueryParser<T>
     {
-        IQuery<T> Parse<T>(IEnumerable<Token> rpnTokens);
-        IQuery<T> Parse<T>(string queryString);
+        IQuery<T> Parse(IEnumerable<Token> rpnTokens);
+        IQuery<T> Parse(string queryString);
     }
 }

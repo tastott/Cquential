@@ -11,38 +11,41 @@ namespace Tim.Cquential.Language.Parsers
     using Core.Expressions;
     using Core.Queries;
     using Utilities;
-
-    public class ExpressionQueryParser : IQueryParser
+    
+    public class ExpressionQueryParser<T> : IQueryParser<T>
     {
         private TokenTreeMaker _tokenTreeMaker;
+        private ExpressionFactory<T> _expressions;
 
         public ExpressionQueryParser()
         {
             _tokenTreeMaker = new TokenTreeMaker(new TokenShunter());
+            _expressions = new ExpressionFactory<T>();
         }
 
         public ExpressionQueryParser(TokenTreeMaker tokenTreeMaker)
         {
             _tokenTreeMaker = tokenTreeMaker;
+            _expressions = new ExpressionFactory<T>();
         }
 
-        public IQuery<T> Parse<T>(IEnumerable<Token> rpnTokens)
+        public IQuery<T> Parse(IEnumerable<Token> rpnTokens)
         {
             var tokenTreeRoot = _tokenTreeMaker.MakeTree(rpnTokens);
-            IExpression<T> expression = CreateExpressionTree<T>(tokenTreeRoot);
+            IExpression<T> expression = CreateExpressionTree(tokenTreeRoot);
 
             return new ExpressionQuery<T>(expression);
         }
 
-        public IQuery<T> Parse<T>(string queryString)
+        public IQuery<T> Parse(string queryString)
         {
             var tokenizer = new Tokenizer();
             var tokens = tokenizer.Tokenize(queryString);
 
-            return Parse<T>(tokens);
+            return Parse(tokens);
         }
 
-        private IExpression<T> CreateExpressionTree<T>(TokenTreeNode root)
+        private IExpression<T> CreateExpressionTree(TokenTreeNode root)
         {
             switch (root.Type)
             {
@@ -51,18 +54,18 @@ namespace Tim.Cquential.Language.Parsers
                     if (!double.TryParse(root.Value, out value))
                         throw new Exception(String.Format("Value could not be converted to a double: '{0}'", root.Value));
 
-                    return ExpressionFactory.Constant<T>(value);
+                    return _expressions.Constant(value);
 
                 case TokenType.Aggregate:
-                    return ParseAggregate<T>(root.Value);
+                    return ParseAggregate(root.Value);
 
                 case TokenType.Function:
-                    return MakeFunctionExpression<T>(root);
+                    return MakeFunctionExpression(root);
 
                 case TokenType.Operator:
-                    var expLeft = CreateExpressionTree<T>(root.Children[0]);
-                    var expRight = CreateExpressionTree<T>(root.Children[1]);
-                    return ExpressionFactory.Operation(root.Value, expLeft, expRight);
+                    var expLeft = CreateExpressionTree(root.Children[0]);
+                    var expRight = CreateExpressionTree(root.Children[1]);
+                    return _expressions.Operation(root.Value, expLeft, expRight);
 
                 default:
                     throw new Exception(String.Format("Unrecognised TokenType: '{0}'", root.Type.ToString()));
@@ -71,7 +74,7 @@ namespace Tim.Cquential.Language.Parsers
               
         }
         
-        private IExpression<T> MakeFunctionExpression<T>(TokenTreeNode root)
+        private IExpression<T> MakeFunctionExpression(TokenTreeNode root)
         {
             var aggregatePattern = new Regex(@"^\[\*\]\.([A-Za-z0-9]+)$");
             System.Text.RegularExpressions.Match match = null;
@@ -88,13 +91,13 @@ namespace Tim.Cquential.Language.Parsers
                 case "COUNT":
                     if (child.Type != TokenType.Aggregate) throw new Exception(String.Format("Cannot apply MAX function to parameter type '{0}'", child.Type.ToString()));
                     if(!aggregatePattern.TryMatch(child.Value, out match)) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
-                    return ExpressionFactory.Aggregate<T>(functionName, match.Groups[1].Value);
+                    return _expressions.Aggregate(functionName, match.Groups[1].Value);
 
                 case "ALL":
                     var left = ParseRelativeItem(child.Children[0].Value);
                     var right = ParseRelativeItem(child.Children[1].Value);
 
-                    return ExpressionFactory.AllTrue<T>(child.Value, left.Item1, left.Item2, right.Item1, right.Item2);
+                    return _expressions.AllTrue(child.Value, left.Item1, left.Item2, right.Item1, right.Item2);
 
 
                 default:
@@ -117,7 +120,7 @@ namespace Tim.Cquential.Language.Parsers
             return Tuple.Create(offset, match.Groups[2].Value);
         }
 
-        private IExpression<T> ParseAggregate<T>(string input)
+        private IExpression<T> ParseAggregate(string input)
         {
             var indexedItemPattern = new Regex(@"^\[([A-Za-z0-9-]+)\]\.([A-Za-z0-9]+)$");
             var aggregatePattern = new Regex(@"^([A-Za-z0-9]+)\(\[\*\]\.([A-Za-z0-9]+)\)$");
@@ -144,7 +147,8 @@ namespace Tim.Cquential.Language.Parsers
                 }
                 else if (int.TryParse(indexString, out staticIndex))
                 {
-                    return ExpressionFactory.StaticItemMember<T>(staticIndex, memberName);
+                    if (staticIndex == 0) return _expressions.FirstItemMember(memberName);
+                    else return _expressions.StaticItemMember(staticIndex, memberName);
                 }
                 else throw new Exception("Unrecognised indexed item reference");
 
@@ -154,7 +158,7 @@ namespace Tim.Cquential.Language.Parsers
                 string functionName = match.Groups[1].Value;
                 string memberName = match.Groups[2].Value;
 
-                return ExpressionFactory.Aggregate<T>(functionName, memberName);
+                return _expressions.Aggregate(functionName, memberName);
             }
             else throw new Exception(String.Format("Input not parseable: {0}", input));
         }

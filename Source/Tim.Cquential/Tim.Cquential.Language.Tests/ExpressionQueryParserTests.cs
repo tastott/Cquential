@@ -12,13 +12,14 @@ namespace Tim.Cquential.Language.Parsers
     using Core.Queries;
     using Core.Matching;
     using Tokens;
+    using Tim.Cquential.Core.Expressions;
   
     [TestClass]
     public class ExpressionQueryParserTests
     {
-        public IQueryParser GetParser()
+        public IQueryParser<T> GetParser<T>()
         {
-            return new ExpressionQueryParser(new TokenTreeMaker(new TokenShunter()));
+            return new ExpressionQueryParser<T>(new TokenTreeMaker(new TokenShunter()));
         }
 
         public IMatchCandidate<T> MakeCandidate<T>(IEnumerable<T> sequence)
@@ -29,39 +30,77 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithConstants()
         {
-            var parser = GetParser();
+            var expressions = new ExpressionFactory<Leg>();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("3 + 4 > 2 AND 4 / 2 <= 4");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var expected =
+                expressions.And
+                (
+                    expressions.GreaterThan
+                    (
+                        expressions.Plus
+                        (
+                            expressions.Constant(3),
+                            expressions.Constant(4)
+                        ),
+                        expressions.Constant(2)
+                    ),
+                    expressions.LessThanOrEqualTo
+                    (
+                        expressions.Divide
+                        (
+                            expressions.Constant(4),
+                            expressions.Constant(2)
+                        ),
+                        expressions.Constant(4)
+                    )
+                );
+
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
 
             query.Expression
-                .GetBoolValue(null)
                 .Should()
-                .Be(true);
+                .Be(expected);
         }
 
         [TestMethod]
         public void ParseExpressionWithStaticLegReferenceAndConstant()
         {
-            var parser = GetParser();
+            var expressions = new ExpressionFactory<Leg>();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[0].Speed > 10 AND [0].StartElevation < 50");
+            var expected =
+                expressions.And
+                (
+                    expressions.GreaterThan
+                    (
+                        expressions.FirstItemMember("Speed"),
+                        expressions.Constant(10)
+                    ),
+                    expressions.LessThan
+                    (
+                        expressions.FirstItemMember("StartElevation"),
+                        expressions.Constant(50)
+                    )
+                );
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var context = MakeCandidate<Leg>(new List<Leg> { new Leg { Speed = 9, StartElevation = 2 } });
 
             query.Expression
-                .GetBoolValue(context)
                 .Should()
-                .Be(false);
+                .Be(expected);
         }
 
         [TestMethod]
         public void ParseExpressionWithFinalLegReferenceAndConstant()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[n].Speed > 10 AND [n].StartElevation < 50");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
                 {
                     new Leg { Speed = 12, StartElevation = 2 } ,
@@ -78,10 +117,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithMax()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("MAX([*].Speed) > 10");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
                 { 
                     new Leg { Speed = 9}, 
@@ -98,10 +137,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithMaxAndMin()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("MAX([*].Speed) > MIN([*].Speed) * 2");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
                 { 
                     new Leg { Speed = 2}, 
@@ -118,10 +157,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithAll()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("ALL([x].Speed > [x-1].Speed)");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
                 { 
                     new Leg { Speed = 2}, 
@@ -140,10 +179,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void SimpleExpressionWithConstantsIsImmutable()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("10 < 3");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
 
             query.Expression
                 .IsBooleanMutable(null)
@@ -154,10 +193,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ComplexExpressionWithConstantsIsImmutable()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("4 >= 3 AND 10 < 3");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
 
             query.Expression
                 .IsBooleanMutable(null)
@@ -168,10 +207,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ArbitraryExpressionIsImmutable()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[0].Speed > 10 AND MAX([*].Speed) > MIN([*].Speed) * 2");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg>
                 {
                     new Leg{Speed = 9},
@@ -192,10 +231,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void AnotherArbitraryExpressionIsImmutable()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[0].Speed > 10 AND MAX([*].Speed) > MIN([*].Speed) * 2");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg>
                 {
                     new Leg{Speed = 11},
@@ -216,10 +255,10 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ExpressionWithAllIsImmutableWhenFalse()
         {
-            var parser = GetParser();
+            var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("ALL([x].Speed > [x-1].Speed)");
 
-            var query = parser.Parse<Leg>(tokens) as ExpressionQuery<Leg>;
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
                 { 
                     new Leg { Speed = 2}, 
