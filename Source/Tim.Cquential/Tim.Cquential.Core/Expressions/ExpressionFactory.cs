@@ -60,6 +60,16 @@ namespace Tim.Cquential.Core.Expressions
             return new GreaterThanOrEqualToExpression<T>(left, right);
         }
 
+        public IExpression<T> Max(string memberName)
+        {
+            return new MaxExpression<T>(memberName);
+        }
+
+        public IExpression<T> Min(string memberName)
+        {
+            return new MinExpression<T>(memberName);
+        }
+
         public IExpression<T> Operation(string @operator, IExpression<T> left, IExpression<T> right)
         {
             switch (@operator)

@@ -39,7 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\ContextExpressions\MinExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\FirstItemMemberExpression.cs" />
+    <Compile Include="Expressions\ContextExpressions\MaxExpression.cs" />
     <Compile Include="Expressions\NumericToBooleanOperations\AbstractNumericsToBooleanOperationExpression.cs" />
     <Compile Include="Expressions\AllExpression.cs" />
     <Compile Include="Expressions\BooleanToBooleanOperations\AndExpression.cs" />

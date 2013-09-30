@@ -117,8 +117,15 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithMax()
         {
+            var expressions = new ExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("MAX([*].Speed) > 10");
+            var expected =
+                expressions.GreaterThan
+                (
+                    expressions.Max("Speed"),
+                    expressions.Constant(10)
+                );
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
@@ -129,16 +136,26 @@ namespace Tim.Cquential.Language.Parsers
                 };
 
             query.Expression
-                .GetBoolValue(MakeCandidate<Leg>(legs))
                 .Should()
-                .Be(true);
+                .Be(expected);
         }
 
         [TestMethod]
         public void ParseExpressionWithMaxAndMin()
         {
+            var expressions = new ExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("MAX([*].Speed) > MIN([*].Speed) * 2");
+            var expected =
+                expressions.GreaterThan
+                (
+                    expressions.Max("Speed"),
+                    expressions.Times
+                    (
+                        expressions.Min("Speed"),
+                        expressions.Constant(2)
+                    )
+                );
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
@@ -149,9 +166,8 @@ namespace Tim.Cquential.Language.Parsers
                 };
 
             query.Expression
-                .GetBoolValue(MakeCandidate<Leg>(legs))
                 .Should()
-                .Be(true);
+                .Be(expected);
         }
 
         [TestMethod]

@@ -82,15 +82,18 @@ namespace Tim.Cquential.Language.Parsers
             string functionName = root.Value;
             var child = root.Children.Single();
 
-            
+            aggregatePattern.TryMatch(child.Value, out match);
+
             switch (functionName)
             {
                 case "MAX":
+                    return _expressions.Max(match.Groups[1].Value);
                 case "MIN":
+                    return _expressions.Min(match.Groups[1].Value);
                 case "AVG":
                 case "COUNT":
                     if (child.Type != TokenType.Aggregate) throw new Exception(String.Format("Cannot apply MAX function to parameter type '{0}'", child.Type.ToString()));
-                    if(!aggregatePattern.TryMatch(child.Value, out match)) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
+                    if(!match.Success) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
                     return _expressions.Aggregate(functionName, match.Groups[1].Value);
 
                 case "ALL":
