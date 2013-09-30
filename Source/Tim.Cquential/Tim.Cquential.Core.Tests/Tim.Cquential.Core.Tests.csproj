@@ -61,7 +61,6 @@
     <Compile Include="AggregatingMatchCandidateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MatchFinderTests.cs" />
-    <Compile Include="FluentExpressionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

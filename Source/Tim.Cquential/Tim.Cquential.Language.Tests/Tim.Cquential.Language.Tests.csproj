@@ -59,6 +59,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ExpressionQueryParserTests.cs" />
+    <Compile Include="FluentExpressionTest.cs" />
     <Compile Include="TokenizerTests.cs" />
     <Compile Include="TokenShunterTests.cs" />
     <Compile Include="TokenTreeMakerTests.cs" />
