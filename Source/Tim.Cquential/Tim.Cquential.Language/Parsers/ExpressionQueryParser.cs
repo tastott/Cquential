@@ -11,22 +11,20 @@ namespace Tim.Cquential.Language.Parsers
     using Core.Expressions;
     using Core.Queries;
     using Utilities;
+    using Tim.Cquential.Core.Aggregation;
     
     public class ExpressionQueryParser<T> : IQueryParser<T>
     {
         private TokenTreeMaker _tokenTreeMaker;
-        private ExpressionFactory<T> _expressions;
+        private AggregatingExpressionFactory<T> _expressions;
 
         public ExpressionQueryParser()
-        {
-            _tokenTreeMaker = new TokenTreeMaker(new TokenShunter());
-            _expressions = new ExpressionFactory<T>();
-        }
+            : this(new TokenTreeMaker(new TokenShunter())) { }
 
         public ExpressionQueryParser(TokenTreeMaker tokenTreeMaker)
         {
             _tokenTreeMaker = tokenTreeMaker;
-            _expressions = new ExpressionFactory<T>();
+            _expressions = new AggregatingExpressionFactory<T>();
         }
 
         public IQuery<T> Parse(IEnumerable<Token> rpnTokens)
@@ -34,7 +32,7 @@ namespace Tim.Cquential.Language.Parsers
             var tokenTreeRoot = _tokenTreeMaker.MakeTree(rpnTokens);
             IExpression<T> expression = CreateExpressionTree(tokenTreeRoot);
 
-            return new ExpressionQuery<T>(expression);
+            return new ExpressionWithAggregatorsQuery<T>(expression, _expressions.AggregatorFactory);
         }
 
         public IQuery<T> Parse(string queryString)
@@ -91,10 +89,11 @@ namespace Tim.Cquential.Language.Parsers
                 case "MIN":
                     return _expressions.Min(match.Groups[1].Value);
                 case "AVG":
-                case "COUNT":
-                    if (child.Type != TokenType.Aggregate) throw new Exception(String.Format("Cannot apply MAX function to parameter type '{0}'", child.Type.ToString()));
-                    if(!match.Success) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
-                    return _expressions.Aggregate(functionName, match.Groups[1].Value);
+                    return _expressions.Average(match.Groups[1].Value);
+                //case "COUNT":
+                //    if (child.Type != TokenType.Aggregate) throw new Exception(String.Format("Cannot apply MAX function to parameter type '{0}'", child.Type.ToString()));
+                //    if(!match.Success) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
+                //    return _expressions.Aggregate(functionName, match.Groups[1].Value);
 
                 case "ALL":
                     var left = ParseRelativeItem(child.Children[0].Value);
@@ -156,13 +155,13 @@ namespace Tim.Cquential.Language.Parsers
                 else throw new Exception("Unrecognised indexed item reference");
 
             }
-            else if (aggregatePattern.TryMatch(input, out match))
-            {
-                string functionName = match.Groups[1].Value;
-                string memberName = match.Groups[2].Value;
+            //else if (aggregatePattern.TryMatch(input, out match))
+            //{
+            //    string functionName = match.Groups[1].Value;
+            //    string memberName = match.Groups[2].Value;
 
-                return _expressions.Aggregate(functionName, memberName);
-            }
+            //    return _expressions.Aggregate(functionName, memberName);
+            //}
             else throw new Exception(String.Format("Input not parseable: {0}", input));
         }
     }

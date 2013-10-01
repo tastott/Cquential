@@ -31,16 +31,12 @@ namespace Tim.Cquential.Core.Matching
                     candidate.Put(item);
                     var result = query.IsMatch(candidate);
 
-                    //Process closed candidates
-                    if (!result.IsMutable)
+                    //Process definite non-matches
+                    if (!result.IsMutable && !result.IsMatch)
                     {
                         closedCandidates.Add(candidateState);
 
-                        if (result.IsMatch)
-                        {
-                            completedMatches.Add(candidate.GetMatch());
-                        }
-                        else if (candidateState.PreviousMatch != null)
+                        if (candidateState.PreviousMatch != null)
                         {
                             completedMatches.Add(candidateState.PreviousMatch);
                         }

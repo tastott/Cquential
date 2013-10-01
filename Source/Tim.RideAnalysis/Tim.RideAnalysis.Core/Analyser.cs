@@ -16,8 +16,8 @@ namespace Tim.RideAnalysis.Core
     {
         public IEnumerable<Match> SearchRide(Ride ride, string queryString)
         {
-            var parser = new ExpressionQueryParser();
-            var query = parser.Parse<Leg>(queryString);
+            var parser = new ExpressionQueryParser<Leg>();
+            var query = parser.Parse(queryString);
             var finder = new MatchFinder<Leg>();
 
             var matches = finder.FindMatches(ride.Legs, query);

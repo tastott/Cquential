@@ -20,17 +20,23 @@ namespace Tim.RideAnalysis.Console
 
             while (command != "x")
             {
-                if (command != null) ExecuteCommand(command);
+                if (command != null)
+                {
+                    var time = ExecuteCommand(command);
+                    System.Console.WriteLine("\nExecution took {0} milliseconds.", time);
+                }
 
                 System.Console.WriteLine("Type a query or 'x' to exit");
                 command = System.Console.ReadLine();
             }
         }
 
-        private static void ExecuteCommand(string command)
+        private static int ExecuteCommand(string command)
         {
             if (ride == null) ride = new Importer().ImportRideFromGpxFile(@"C:\users\tim\downloads\evening ride.gpx");
             if (analyser == null) analyser = new Analyser();
+
+            var startTime = DateTime.Now;
 
             //string queryString =
             //"[0].Speed > 20 AND ALL([x].Speed > [x-1].Speed) AND MAX([*].Speed) > MIN([*].Speed) * 2 AND ALL([x].StartElevation >= [x-1].StartElevation)";
@@ -45,6 +51,8 @@ namespace Tim.RideAnalysis.Console
             {
                 System.Console.WriteLine("Oh dear. Something bad happened.\n{0}", ex.Message);
             }
+
+            return (int)DateTime.Now.Subtract(startTime).TotalMilliseconds;
         }
 
         private static void WriteMatches(IEnumerable<Match> matches)

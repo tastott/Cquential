@@ -20,10 +20,21 @@ namespace Tim.Cquential.Core.Expressions
             return new ConstantExpression<T>(value);
         }
 
+        #region Boolean to Boolean
+
         public IExpression<T> And(IExpression<T> left, IExpression<T> right)
         {
             return new AndExpression<T>(left, right);
         }
+
+        public IExpression<T> Or(IExpression<T> left, IExpression<T> right)
+        {
+            return new OrExpression<T>(left, right);
+        }
+
+        #endregion
+
+        #region Numeric to Boolean 
 
         public IExpression<T> GreaterThan(IExpression<T> left, IExpression<T> right)
         {
@@ -35,14 +46,23 @@ namespace Tim.Cquential.Core.Expressions
             return new LessThanExpression<T>(left, right);
         }
 
-        public IExpression<T> Plus(IExpression<T> left, IExpression<T> right)
-        {
-            return new PlusExpression<T>(left, right);
-        }
-
         public IExpression<T> LessThanOrEqualTo(IExpression<T> left, IExpression<T> right)
         {
             return new LessThanOrEqualToExpression<T>(left, right);
+        }
+
+        public IExpression<T> GreaterThanOrEqualTo(IExpression<T> left, IExpression<T> right)
+        {
+            return new GreaterThanOrEqualToExpression<T>(left, right);
+        }
+
+        #endregion
+
+        #region Numeric to Numeric
+
+        public IExpression<T> Plus(IExpression<T> left, IExpression<T> right)
+        {
+            return new PlusExpression<T>(left, right);
         }
 
         public IExpression<T> Divide(IExpression<T> left, IExpression<T> right)
@@ -55,20 +75,28 @@ namespace Tim.Cquential.Core.Expressions
             return new TimesExpression<T>(left, right);
         }
 
-        public IExpression<T> GreaterThanOrEqualTo(IExpression<T> left, IExpression<T> right)
-        {
-            return new GreaterThanOrEqualToExpression<T>(left, right);
-        }
+        #endregion
 
-        public IExpression<T> Max(string memberName)
+        #region Aggregate
+
+        public virtual IExpression<T> Max(string memberName)
         {
             return new MaxExpression<T>(memberName);
         }
 
-        public IExpression<T> Min(string memberName)
+        public virtual IExpression<T> Min(string memberName)
         {
             return new MinExpression<T>(memberName);
         }
+
+        public virtual IExpression<T> Average(string memberName)
+        {
+            return new AverageExpression<T>(memberName);
+        }
+
+        #endregion
+
+        #region Other
 
         public IExpression<T> Operation(string @operator, IExpression<T> left, IExpression<T> right)
         {
@@ -117,12 +145,12 @@ namespace Tim.Cquential.Core.Expressions
             //else throw new Exception(String.Format("Invalid combination of return and operand types: '{0}' and '{1}'", returnType.Name, operandType.Name));
         }
 
-        public IExpression<T> FirstItemMember(string memberName)
+        public virtual IExpression<T> FirstItemMember(string memberName)
         {
             return new FirstItemMemberExpression<T>(memberName);
         }
 
-        public IExpression<T> StaticItemMember(int itemIndex, string memberName)
+        public virtual IExpression<T> StaticItemMember(int itemIndex, string memberName)
         {
             var memberFunc = GetMemberFunc(memberName);
 
@@ -143,30 +171,32 @@ namespace Tim.Cquential.Core.Expressions
             return new AllExpression<T>(operationFunc, leftValuesFunc, rightValuesFunc);
         }
 
-        public IExpression<T> Aggregate(string functionName, string memberName)
-        {
-            var memberFunc = GetMemberFunc(memberName);
+        //public IExpression<T> Aggregate(string functionName, string memberName)
+        //{
+        //    var memberFunc = GetMemberFunc(memberName);
 
-            switch (functionName)
-            {
-                case "MAX":
-                    return new ContextExpression<T>(c => c.Sequence.Max(l => memberFunc(l)), NumericMutability.Increasable); 
+        //    switch (functionName)
+        //    {
+        //        //case "MAX":
+        //        //    return new ContextExpression<T>(c => c.Sequence.Max(l => memberFunc(l)), NumericMutability.Increasable);
 
-                case "MIN":
-                    return new ContextExpression<T>(c => c.Sequence.Min(l => memberFunc(l)), NumericMutability.Decreaseable);
+        //        //case "MIN":
+        //        //    return new ContextExpression<T>(c => c.Sequence.Min(l => memberFunc(l)), NumericMutability.Decreaseable);
 
-                case "AVG":
-                    return new ContextExpression<T>(c => c.Sequence.Average(l => memberFunc(l)), NumericMutability.CanIncreaseOrDecrease);
+        //        //case "AVG":
+        //        //    return new ContextExpression<T>(c => c.Sequence.Average(l => memberFunc(l)), NumericMutability.CanIncreaseOrDecrease);
 
-                case "COUNT":
-                    return new ContextExpression<T>(c => c.Sequence.Count(), NumericMutability.Increasable);
+        //        //case "COUNT":
+        //        //    return new ContextExpression<T>(c => c.Sequence.Count(), NumericMutability.Increasable);
 
-                default:
-                    throw new Exception(String.Format("Unrecognised function name: '{0}'", functionName));
-            }
-        }
+        //        default:
+        //            throw new Exception(String.Format("Unrecognised function name: '{0}'", functionName));
+        //    }
+        //}
 
-        private static Func<T, double> GetMemberFunc(string name)
+        #endregion
+
+        protected static Func<T, double> GetMemberFunc(string name)
         {
             var memberInfo = typeof(T).GetMember(name)[0];
 

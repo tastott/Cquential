@@ -37,12 +37,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tim.Cquential.Core">
-      <HintPath>..\..\Tim.Cquential\Tim.Cquential.Core\bin\Debug\Tim.Cquential.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Tim.Cquential.Language">
-      <HintPath>..\..\Tim.Cquential\Tim.Cquential.Language\bin\Debug\Tim.Cquential.Language.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analyser.cs" />
@@ -50,6 +44,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Tim.Cquential\Tim.Cquential.Core\Tim.Cquential.Core.csproj">
+      <Project>{ef97e182-1f01-4919-bf60-205276bd4b74}</Project>
+      <Name>Tim.Cquential.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tim.Cquential\Tim.Cquential.Language\Tim.Cquential.Language.csproj">
+      <Project>{f222378e-bbb8-4957-a35d-26b7d6688c64}</Project>
+      <Name>Tim.Cquential.Language</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tim.RideAnalysis.Models\Tim.RideAnalysis.Models.csproj">
       <Project>{bc04431d-0f06-4bbc-98b0-66a5b23d5def}</Project>
       <Name>Tim.RideAnalysis.Models</Name>

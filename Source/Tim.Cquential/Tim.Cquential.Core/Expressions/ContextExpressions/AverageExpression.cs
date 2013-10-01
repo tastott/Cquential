@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Tim.Cquential.Core.Expressions.ContextExpressions
 {
-    public class MinExpression<T> : ContextExpression<T>
+    public class AverageExpression<T> : ContextExpression<T>
     {
         private string _memberName;
 
-        public MinExpression(string memberName)
-            : base(c => c.Sequence.Min(i => GetMemberFunction(memberName)(i)), NumericMutability.Decreaseable)
+        public AverageExpression(string memberName)
+            : base(c => c.Sequence.Average(i => GetMemberFunction(memberName)(i)), NumericMutability.CanIncreaseOrDecrease)
         {
             _memberName = memberName;
         }
 
         public override bool Equals(object obj)
         {
-            var that = obj as MinExpression<T>;
+            var that = obj as AverageExpression<T>;
 
             if (that != null) return this._memberName.Equals(that._memberName);
             return false;

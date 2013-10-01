@@ -39,6 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregation\AggregatingContextExpression.cs" />
+    <Compile Include="Aggregation\AggregatingExpressionFactory.cs" />
+    <Compile Include="Aggregation\Aggregators\AverageAggregator.cs" />
+    <Compile Include="Aggregation\Aggregators\IndexedItemAggregator.cs" />
+    <Compile Include="Expressions\ContextExpressions\AverageExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\MinExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\FirstItemMemberExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\MaxExpression.cs" />
@@ -82,7 +87,9 @@
       <Name>Tim.Cquential.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Expressions\Aggregation\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
