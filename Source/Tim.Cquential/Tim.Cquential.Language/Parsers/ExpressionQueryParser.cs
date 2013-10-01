@@ -78,7 +78,7 @@ namespace Tim.Cquential.Language.Parsers
 
         protected IExpression<T> MakeFunctionExpression(TokenTreeNode root)
         {
-            var aggregatePattern = new Regex(@"^\[\*\]\.([A-Za-z0-9]+)$");
+            var aggregatePattern = new Regex(@"^([A-Za-z0-9]+)$");
             System.Text.RegularExpressions.Match match = null;
 
             string functionName = root.Value;
@@ -128,7 +128,7 @@ namespace Tim.Cquential.Language.Parsers
 
         protected IExpression<T> ParseSingleItemMember(string input)
         {
-            var indexedItemPattern = new Regex(@"^\[((?<static>[0-9]+)|(?<last>n)|(?<relative>x(-|\+)[0-9]+))\]\.(?<member>[A-Za-z0-9]+)$");
+            var indexedItemPattern = new Regex(@"^\[?((?<static>[0-9]+)|(?<last>n)|(?<relative>x(-|\+)[0-9]+))\]?\.(?<member>[A-Za-z0-9]+)$");
 
             var match = indexedItemPattern.Match(input);
 

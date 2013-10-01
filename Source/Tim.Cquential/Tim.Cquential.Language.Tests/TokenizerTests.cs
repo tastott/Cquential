@@ -100,7 +100,43 @@ namespace Tim.Cquential.Language
         }
 
         [TestMethod]
-        public void TokenizeIdentifiesStaticLegReference()
+        public void TokenizeIdentifiesFirstItemReference()
+        {
+            var tokenizer = new Tokenizer();
+            string input = "0.Speed";
+
+            var tokens = tokenizer.Tokenize(input).ToList();
+
+            tokens.Should()
+                .OnlyContain(t => t.Type == TokenType.SingleItemMember && t.Value == "0.Speed");
+        }
+
+        [TestMethod]
+        public void TokenizeIdentifiesLastItemReference()
+        {
+            var tokenizer = new Tokenizer();
+            string input = "n.Speed";
+
+            var tokens = tokenizer.Tokenize(input).ToList();
+
+            tokens.Should()
+                .OnlyContain(t => t.Type == TokenType.SingleItemMember && t.Value == "n.Speed");
+        }
+
+        [TestMethod]
+        public void TokenizeIdentifiesStaticItemReference()
+        {
+            var tokenizer = new Tokenizer();
+            string input = "x.Speed";
+
+            var tokens = tokenizer.Tokenize(input).ToList();
+
+            tokens.Should()
+                .OnlyContain(t => t.Type == TokenType.SingleItemMember && t.Value == "x.Speed");
+        }
+
+        [TestMethod]
+        public void TokenizeIdentifiesStaticItemReferenceWithSquareBrackets()
         {
             var tokenizer = new Tokenizer();
             string input = "[x].Speed";
@@ -112,7 +148,7 @@ namespace Tim.Cquential.Language
         }
 
         [TestMethod]
-        public void TokenizeIdentifiesRelativeLegReference()
+        public void TokenizeIdentifiesRelativeItemReference()
         {
             var tokenizer = new Tokenizer();
             string input = "[x-1].Speed";
@@ -127,7 +163,7 @@ namespace Tim.Cquential.Language
         public void TokenizeIdentifiesAggregateFunction()
         {
             var tokenizer = new Tokenizer();
-            string input = "BLAH([*].Speed)";
+            string input = "BLAH(Speed)";
 
             var tokens = tokenizer.Tokenize(input);
 
@@ -135,7 +171,7 @@ namespace Tim.Cquential.Language
             { 
                 {"BLAH", TokenType.Function},
                 {"(", TokenType.LeftParenthesis},
-                {"[*].Speed", TokenType.SingleItemMember},
+                {"Speed", TokenType.SingleItemMember},
                 {")", TokenType.RightParenthesis},
             };
 
@@ -146,7 +182,7 @@ namespace Tim.Cquential.Language
         public void TokenizeTokenizesSomeArbitraryInput()
         {
             var tokenizer = new Tokenizer();
-            string input = "BLAH([*].Speed)> 5 AND ALL([x].Speed>[x-1].Speed) AND [0].Speed < 5   ";
+            string input = "BLAH(Speed)> 5 AND ALL([x].Speed>[x-1].Speed) AND [0].Speed < 5   ";
 
             var tokens = tokenizer.Tokenize(input);
 
@@ -154,7 +190,7 @@ namespace Tim.Cquential.Language
             { 
                 {"BLAH", TokenType.Function},
                 {"(", TokenType.LeftParenthesis},
-                {"[*].Speed", TokenType.SingleItemMember},
+                {"Speed", TokenType.SingleItemMember},
                 {")", TokenType.RightParenthesis},
                 {">", TokenType.Operator},
                 {"5", TokenType.Constant},

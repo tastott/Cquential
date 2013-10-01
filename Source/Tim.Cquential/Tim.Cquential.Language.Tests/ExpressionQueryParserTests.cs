@@ -65,7 +65,7 @@ namespace Tim.Cquential.Language.Parsers
         }
 
         [TestMethod]
-        public void ParseExpressionWithStaticLegReferenceAndConstant()
+        public void ParseExpressionWithBracketedStaticItemReferenceAndConstant()
         {
             var expressions = new ExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
@@ -95,10 +95,59 @@ namespace Tim.Cquential.Language.Parsers
         }
 
         [TestMethod]
-        public void ParseExpressionWithFinalLegReferenceAndConstant()
+        public void ParseExpressionWithStaticItemReferenceAndConstant()
+        {
+            var expressions = new ExpressionFactory<Leg>();
+            var parser = GetParser<Leg>();
+            var tokens = new Tokenizer().Tokenize("0.Speed > 10 AND 0.StartElevation < 50");
+            var expected =
+                expressions.And
+                (
+                    expressions.GreaterThan
+                    (
+                        expressions.FirstItemMember("Speed"),
+                        expressions.Constant(10)
+                    ),
+                    expressions.LessThan
+                    (
+                        expressions.FirstItemMember("StartElevation"),
+                        expressions.Constant(50)
+                    )
+                );
+
+
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
+            var context = MakeCandidate<Leg>(new List<Leg> { new Leg { Speed = 9, StartElevation = 2 } });
+
+            query.Expression
+                .Should()
+                .Be(expected);
+        }
+
+        [TestMethod]
+        public void ParseExpressionWithBracketedFinalItemReferenceAndConstant()
         {
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[n].Speed > 10 AND [n].StartElevation < 50");
+
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
+            var legs = new List<Leg> 
+                {
+                    new Leg { Speed = 12, StartElevation = 2 } ,
+                    new Leg { Speed = 5, StartElevation = 2 } 
+                };
+
+            query.Expression
+                .GetBoolValue(MakeCandidate<Leg>(legs))
+                .Should()
+                .Be(false);
+        }
+
+        [TestMethod]
+        public void ParseExpressionWithFinalItemReferenceAndConstant()
+        {
+            var parser = GetParser<Leg>();
+            var tokens = new Tokenizer().Tokenize("n.Speed > 10 AND n.StartElevation < 50");
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg> 
@@ -119,7 +168,7 @@ namespace Tim.Cquential.Language.Parsers
         {
             var expressions = new ExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
-            var tokens = new Tokenizer().Tokenize("MAX([*].Speed) > 10");
+            var tokens = new Tokenizer().Tokenize("MAX(Speed) > 10");
             var expected =
                 expressions.GreaterThan
                 (
@@ -145,7 +194,7 @@ namespace Tim.Cquential.Language.Parsers
         {
             var expressions = new ExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
-            var tokens = new Tokenizer().Tokenize("MAX([*].Speed) > MIN([*].Speed) * 2");
+            var tokens = new Tokenizer().Tokenize("MAX(Speed) > MIN(Speed) * 2");
             var expected =
                 expressions.GreaterThan
                 (
@@ -224,7 +273,7 @@ namespace Tim.Cquential.Language.Parsers
         public void ArbitraryExpressionIsImmutable()
         {
             var parser = GetParser<Leg>();
-            var tokens = new Tokenizer().Tokenize("[0].Speed > 10 AND MAX([*].Speed) > MIN([*].Speed) * 2");
+            var tokens = new Tokenizer().Tokenize("0.Speed > 10 AND MAX(Speed) > MIN(Speed) * 2");
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg>
@@ -248,7 +297,7 @@ namespace Tim.Cquential.Language.Parsers
         public void AnotherArbitraryExpressionIsImmutable()
         {
             var parser = GetParser<Leg>();
-            var tokens = new Tokenizer().Tokenize("[0].Speed > 10 AND MAX([*].Speed) > MIN([*].Speed) * 2");
+            var tokens = new Tokenizer().Tokenize("0.Speed > 10 AND MAX(Speed) > MIN(Speed) * 2");
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
             var legs = new List<Leg>
