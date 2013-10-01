@@ -42,8 +42,12 @@
     <Compile Include="Aggregation\AggregatingContextExpression.cs" />
     <Compile Include="Aggregation\AggregatingExpressionFactory.cs" />
     <Compile Include="Aggregation\Aggregators\AverageAggregator.cs" />
+    <Compile Include="Aggregation\Aggregators\LastItemAggregator.cs" />
+    <Compile Include="Aggregation\Aggregators\MaxAggregator.cs" />
+    <Compile Include="Aggregation\Aggregators\MinAggregator.cs" />
     <Compile Include="Aggregation\Aggregators\IndexedItemAggregator.cs" />
     <Compile Include="Expressions\ContextExpressions\AverageExpression.cs" />
+    <Compile Include="Expressions\ContextExpressions\LastItemMemberExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\MinExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\FirstItemMemberExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\MaxExpression.cs" />

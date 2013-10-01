@@ -59,7 +59,7 @@ namespace Tim.Cquential.Language.Tokens
                     //}
                     else if (LegReferencePattern.TryMatch(remainingWord, out match))
                     {
-                        token = new Token(TokenType.Aggregate, match.Value);
+                        token = new Token(TokenType.SingleItemMember, match.Value);
                         remainingWord = LegReferencePattern.Replace(remainingWord, "", 1);
                     }
                     else if (BooleanOperator.TryMatch(remainingWord, out match))

@@ -19,7 +19,7 @@ namespace Tim.Cquential.Language.Parsers
     {
         public IQueryParser<T> GetParser<T>()
         {
-            return new ExpressionQueryParser<T>(new TokenTreeMaker(new TokenShunter()));
+            return new ExpressionQueryParser<T>();
         }
 
         public IMatchCandidate<T> MakeCandidate<T>(IEnumerable<T> sequence)

@@ -150,6 +150,11 @@ namespace Tim.Cquential.Core.Expressions
             return new FirstItemMemberExpression<T>(memberName);
         }
 
+        public virtual IExpression<T> LastItemMember(string memberName)
+        {
+            return new LastItemMemberExpression<T>(memberName);
+        }
+
         public virtual IExpression<T> StaticItemMember(int itemIndex, string memberName)
         {
             var memberFunc = GetMemberFunc(memberName);

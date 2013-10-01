@@ -108,7 +108,7 @@ namespace Tim.Cquential.Language
             var tokens = tokenizer.Tokenize(input).ToList();
 
             tokens.Should()
-                .OnlyContain(t => t.Type == TokenType.Aggregate && t.Value == "[x].Speed");
+                .OnlyContain(t => t.Type == TokenType.SingleItemMember && t.Value == "[x].Speed");
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace Tim.Cquential.Language
             var tokens = tokenizer.Tokenize(input).ToList();
 
             tokens.Should()
-                .OnlyContain(t => t.Type == TokenType.Aggregate && t.Value == "[x-1].Speed");
+                .OnlyContain(t => t.Type == TokenType.SingleItemMember && t.Value == "[x-1].Speed");
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ namespace Tim.Cquential.Language
             { 
                 {"BLAH", TokenType.Function},
                 {"(", TokenType.LeftParenthesis},
-                {"[*].Speed", TokenType.Aggregate},
+                {"[*].Speed", TokenType.SingleItemMember},
                 {")", TokenType.RightParenthesis},
             };
 
@@ -154,19 +154,19 @@ namespace Tim.Cquential.Language
             { 
                 {"BLAH", TokenType.Function},
                 {"(", TokenType.LeftParenthesis},
-                {"[*].Speed", TokenType.Aggregate},
+                {"[*].Speed", TokenType.SingleItemMember},
                 {")", TokenType.RightParenthesis},
                 {">", TokenType.Operator},
                 {"5", TokenType.Constant},
                 {"AND",TokenType.Operator}, 
                 {"ALL", TokenType.Function},
                 {"(", TokenType.LeftParenthesis},
-                {"[x].Speed",TokenType.Aggregate},
+                {"[x].Speed",TokenType.SingleItemMember},
                 {">",TokenType.Operator},
-                {"[x-1].Speed",TokenType.Aggregate},
+                {"[x-1].Speed",TokenType.SingleItemMember},
                 {")", TokenType.RightParenthesis},
                 {"AND",TokenType.Operator},
-                {"[0].Speed",TokenType.Aggregate},
+                {"[0].Speed",TokenType.SingleItemMember},
                 {"<",TokenType.Operator},
                 {"5",TokenType.Constant},    
             };

@@ -15,24 +15,28 @@ namespace Tim.Cquential.Language.Parsers
     
     public class ExpressionQueryParser<T> : IQueryParser<T>
     {
-        private TokenTreeMaker _tokenTreeMaker;
-        private AggregatingExpressionFactory<T> _expressions;
+        protected TokenTreeMaker _tokenTreeMaker;
+        protected ExpressionFactory<T> _expressions;
 
         public ExpressionQueryParser()
-            : this(new TokenTreeMaker(new TokenShunter())) { }
+            : this(new TokenTreeMaker(new TokenShunter()), new ExpressionFactory<T>()) { }
 
-        public ExpressionQueryParser(TokenTreeMaker tokenTreeMaker)
+        public ExpressionQueryParser(ExpressionFactory<T> expressions)
+            : this(new TokenTreeMaker(new TokenShunter()), expressions) { }
+
+
+        public ExpressionQueryParser(TokenTreeMaker tokenTreeMaker, ExpressionFactory<T> expressions)
         {
             _tokenTreeMaker = tokenTreeMaker;
-            _expressions = new AggregatingExpressionFactory<T>();
+            _expressions = expressions;
         }
 
-        public IQuery<T> Parse(IEnumerable<Token> rpnTokens)
+        public virtual IQuery<T> Parse(IEnumerable<Token> rpnTokens)
         {
             var tokenTreeRoot = _tokenTreeMaker.MakeTree(rpnTokens);
             IExpression<T> expression = CreateExpressionTree(tokenTreeRoot);
 
-            return new ExpressionWithAggregatorsQuery<T>(expression, _expressions.AggregatorFactory);
+            return new ExpressionQuery<T>(expression);
         }
 
         public IQuery<T> Parse(string queryString)
@@ -43,7 +47,7 @@ namespace Tim.Cquential.Language.Parsers
             return Parse(tokens);
         }
 
-        private IExpression<T> CreateExpressionTree(TokenTreeNode root)
+        protected IExpression<T> CreateExpressionTree(TokenTreeNode root)
         {
             switch (root.Type)
             {
@@ -54,8 +58,8 @@ namespace Tim.Cquential.Language.Parsers
 
                     return _expressions.Constant(value);
 
-                case TokenType.Aggregate:
-                    return ParseAggregate(root.Value);
+                case TokenType.SingleItemMember:
+                    return ParseSingleItemMember(root.Value);
 
                 case TokenType.Function:
                     return MakeFunctionExpression(root);
@@ -71,8 +75,8 @@ namespace Tim.Cquential.Language.Parsers
 
               
         }
-        
-        private IExpression<T> MakeFunctionExpression(TokenTreeNode root)
+
+        protected IExpression<T> MakeFunctionExpression(TokenTreeNode root)
         {
             var aggregatePattern = new Regex(@"^\[\*\]\.([A-Za-z0-9]+)$");
             System.Text.RegularExpressions.Match match = null;
@@ -107,8 +111,8 @@ namespace Tim.Cquential.Language.Parsers
             }
         }
 
-        
-        private Tuple<int, string> ParseRelativeItem(string input)
+
+        protected Tuple<int, string> ParseRelativeItem(string input)
         {
              var relativeIndexPattern = new Regex(@"^\[x(-[0-9]+)?\]\.([A-Za-z]+)$");
              System.Text.RegularExpressions.Match match;
@@ -122,39 +126,55 @@ namespace Tim.Cquential.Language.Parsers
             return Tuple.Create(offset, match.Groups[2].Value);
         }
 
-        private IExpression<T> ParseAggregate(string input)
+        protected IExpression<T> ParseSingleItemMember(string input)
         {
-            var indexedItemPattern = new Regex(@"^\[([A-Za-z0-9-]+)\]\.([A-Za-z0-9]+)$");
-            var aggregatePattern = new Regex(@"^([A-Za-z0-9]+)\(\[\*\]\.([A-Za-z0-9]+)\)$");
+            var indexedItemPattern = new Regex(@"^\[((?<static>[0-9]+)|(?<last>n)|(?<relative>x(-|\+)[0-9]+))\]\.(?<member>[A-Za-z0-9]+)$");
 
-            System.Text.RegularExpressions.Match match = null;
+            var match = indexedItemPattern.Match(input);
 
-            if (indexedItemPattern.TryMatch(input, out match))
+            if (match.Groups["static"].Success)
             {
-                string indexString = match.Groups[1].Value;
-                string memberName = match.Groups[2].Value;
+                int index = int.Parse(match.Groups["static"].Value);
 
-                var relativeIndexPattern = new Regex("^[A-Za-z](-[0-9]+)?$"); //TODO: Extend to positive offset
-                int staticIndex;
-
-                var relativeIndexMatch = relativeIndexPattern.Match(indexString);
-
-                if (relativeIndexMatch.Success)
-                {
-                    string offsetString = relativeIndexMatch.Groups[1].Value;
-                    int offset = 0;
-                    if (offsetString != "") int.Parse(relativeIndexMatch.Groups[1].Value);
-
-                    throw new Exception("Not yet implemented");
-                }
-                else if (int.TryParse(indexString, out staticIndex))
-                {
-                    if (staticIndex == 0) return _expressions.FirstItemMember(memberName);
-                    else return _expressions.StaticItemMember(staticIndex, memberName);
-                }
-                else throw new Exception("Unrecognised indexed item reference");
-
+                if (index == 0) return _expressions.FirstItemMember(match.Groups["member"].Value);
+                else return _expressions.StaticItemMember(index, match.Groups["member"].Value);
             }
+            else if (match.Groups["last"].Success)
+            {
+                return _expressions.LastItemMember(match.Groups["member"].Value);
+            }
+            //else if (match.Groups["relative"].Success)
+            //{
+            //    throw new NotImplementedException();
+            //}
+            else throw new Exception(String.Format("Input not parseable: {0}", input));
+            
+            //if (indexedItemPattern.TryMatch(input, out match))
+            //{
+            //    string indexString = match.Groups[1].Value;
+            //    string memberName = match.Groups[2].Value;
+
+            //    var relativeIndexPattern = new Regex("^[A-Za-z](-[0-9]+)?$"); //TODO: Extend to positive offset
+            //    int staticIndex;
+
+            //    var relativeIndexMatch = relativeIndexPattern.Match(indexString);
+
+            //    if (relativeIndexMatch.Success)
+            //    {
+            //        string offsetString = relativeIndexMatch.Groups[1].Value;
+            //        int offset = 0;
+            //        if (offsetString != "") int.Parse(relativeIndexMatch.Groups[1].Value);
+
+            //        throw new Exception("Not yet implemented");
+            //    }
+            //    else if (int.TryParse(indexString, out staticIndex))
+            //    {
+            //        if (staticIndex == 0) return _expressions.FirstItemMember(memberName);
+            //        else return _expressions.StaticItemMember(staticIndex, memberName);
+            //    }
+            //    else throw new Exception("Unrecognised indexed item reference");
+
+            //}
             //else if (aggregatePattern.TryMatch(input, out match))
             //{
             //    string functionName = match.Groups[1].Value;
@@ -162,7 +182,7 @@ namespace Tim.Cquential.Language.Parsers
 
             //    return _expressions.Aggregate(functionName, memberName);
             //}
-            else throw new Exception(String.Format("Input not parseable: {0}", input));
+            
         }
     }
 }

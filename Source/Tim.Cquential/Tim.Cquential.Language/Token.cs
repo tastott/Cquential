@@ -7,7 +7,7 @@ namespace Tim.Cquential.Language
 {
     public enum TokenType
     {
-        Aggregate,
+        SingleItemMember,
         Operator,
         Constant,
         LeftParenthesis,

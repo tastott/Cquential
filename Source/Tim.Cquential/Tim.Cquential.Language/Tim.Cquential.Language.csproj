@@ -45,6 +45,7 @@
     <Compile Include="IQueryParser.cs" />
     <Compile Include="ITokenizer.cs" />
     <Compile Include="ITokenShunter.cs" />
+    <Compile Include="Parsers\ExpressionWithAggregationsQueryParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Parsers\ExpressionQueryParser.cs" />
     <Compile Include="Token.cs" />

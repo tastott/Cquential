@@ -29,7 +29,7 @@ namespace Tim.Cquential.Language.Tokens
 
                     stack.Push(token);
                 }
-                else if (token.Type == TokenType.Constant || token.Type == TokenType.Aggregate)
+                else if (token.Type == TokenType.Constant || token.Type == TokenType.SingleItemMember)
                 {
                     output.Enqueue(token);
                 }

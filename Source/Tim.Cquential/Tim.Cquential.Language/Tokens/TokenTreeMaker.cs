@@ -34,7 +34,7 @@ namespace Tim.Cquential.Language.Tokens
                 switch (token.Type)
                 {
                     case TokenType.Constant:
-                    case TokenType.Aggregate:
+                    case TokenType.SingleItemMember:
                         node = new TokenTreeNode(token);
                         break;
 
