@@ -17,12 +17,17 @@ namespace Tim.Cquential.Language.Parsers
     [TestClass]
     public class ExpressionQueryParserTests
     {
-        public IQueryParser<T> GetParser<T>()
+        public virtual ExpressionFactory<T> GetExpressionFactory<T>()
+        {
+            return new ExpressionFactory<T>();
+        }
+
+        public virtual IQueryParser<T> GetParser<T>()
         {
             return new ExpressionQueryParser<T>();
         }
 
-        public IMatchCandidate<T> MakeCandidate<T>(IEnumerable<T> sequence)
+        public virtual IMatchCandidate<T> MakeCandidate<T>(IEnumerable<T> sequence)
         {
             return new TestMatchCandidate<T>(sequence);
         }
@@ -30,7 +35,7 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithConstants()
         {
-            var expressions = new ExpressionFactory<Leg>();
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("3 + 4 > 2 AND 4 / 2 <= 4");
 
@@ -67,7 +72,7 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithBracketedStaticItemReferenceAndConstant()
         {
-            var expressions = new ExpressionFactory<Leg>();
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[0].Speed > 10 AND [0].StartElevation < 50");
             var expected =
@@ -97,7 +102,7 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithStaticItemReferenceAndConstant()
         {
-            var expressions = new ExpressionFactory<Leg>();
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("0.Speed > 10 AND 0.StartElevation < 50");
             var expected =
@@ -127,46 +132,64 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithBracketedFinalItemReferenceAndConstant()
         {
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("[n].Speed > 10 AND [n].StartElevation < 50");
+            var expected =
+                expressions.And
+                (
+                    expressions.GreaterThan
+                    (
+                        expressions.LastItemMember("Speed"),
+                        expressions.Constant(10)
+                    ),
+                    expressions.LessThan
+                    (
+                        expressions.LastItemMember("StartElevation"),
+                        expressions.Constant(50)
+                    )
+                );
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
-            var legs = new List<Leg> 
-                {
-                    new Leg { Speed = 12, StartElevation = 2 } ,
-                    new Leg { Speed = 5, StartElevation = 2 } 
-                };
 
             query.Expression
-                .GetBoolValue(MakeCandidate<Leg>(legs))
                 .Should()
-                .Be(false);
+                .Be(expected);
         }
 
         [TestMethod]
         public void ParseExpressionWithFinalItemReferenceAndConstant()
         {
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("n.Speed > 10 AND n.StartElevation < 50");
+            var expected =
+                expressions.And
+                (
+                    expressions.GreaterThan
+                    (
+                        expressions.LastItemMember("Speed"),
+                        expressions.Constant(10)
+                    ),
+                    expressions.LessThan
+                    (
+                        expressions.LastItemMember("StartElevation"),
+                        expressions.Constant(50)
+                    )
+                );
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
-            var legs = new List<Leg> 
-                {
-                    new Leg { Speed = 12, StartElevation = 2 } ,
-                    new Leg { Speed = 5, StartElevation = 2 } 
-                };
 
             query.Expression
-                .GetBoolValue(MakeCandidate<Leg>(legs))
                 .Should()
-                .Be(false);
+                .Be(expected);
         }
 
 
         [TestMethod]
         public void ParseExpressionWithMax()
         {
-            var expressions = new ExpressionFactory<Leg>();
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("MAX(Speed) > 10");
             var expected =
@@ -177,12 +200,6 @@ namespace Tim.Cquential.Language.Parsers
                 );
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
-            var legs = new List<Leg> 
-                { 
-                    new Leg { Speed = 9}, 
-                    new Leg { Speed = 10},
-                    new Leg { Speed = 11},
-                };
 
             query.Expression
                 .Should()
@@ -192,7 +209,7 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithMaxAndMin()
         {
-            var expressions = new ExpressionFactory<Leg>();
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("MAX(Speed) > MIN(Speed) * 2");
             var expected =
@@ -207,12 +224,6 @@ namespace Tim.Cquential.Language.Parsers
                 );
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
-            var legs = new List<Leg> 
-                { 
-                    new Leg { Speed = 2}, 
-                    new Leg { Speed = 5},
-                    new Leg { Speed = 3},
-                };
 
             query.Expression
                 .Should()
@@ -222,23 +233,17 @@ namespace Tim.Cquential.Language.Parsers
         [TestMethod]
         public void ParseExpressionWithAll()
         {
+            var expressions = GetExpressionFactory<Leg>();
             var parser = GetParser<Leg>();
             var tokens = new Tokenizer().Tokenize("ALL([x].Speed > [x-1].Speed)");
+            var expected =
+                expressions.AllTrue(">", 0, "Speed", -1, "Speed");
 
             var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
-            var legs = new List<Leg> 
-                { 
-                    new Leg { Speed = 2}, 
-                    new Leg { Speed = 5},
-                    new Leg { Speed = 6},
-                    new Leg { Speed = 7},
-                    new Leg { Speed = 11},
-                };
 
             query.Expression
-                .GetBoolValue(MakeCandidate<Leg>(legs))
                 .Should()
-                .Be(true);
+                .Be(expected);
         }
 
         [TestMethod]

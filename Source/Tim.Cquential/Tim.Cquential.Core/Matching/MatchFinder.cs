@@ -56,7 +56,7 @@ namespace Tim.Cquential.Core.Matching
                         
                     }
 
-                    candidateState.PreviousMatch = result.IsMatch ? candidate.GetMatch() : null;
+                    if (result.IsMatch) candidateState.PreviousMatch = candidate.GetMatch();
                 }
 
                 //Remove closed
