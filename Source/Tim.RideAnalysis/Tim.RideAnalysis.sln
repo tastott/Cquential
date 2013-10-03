@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tim.Cquential.Language", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tim.Cquential.Core", "..\Tim.Cquential\Tim.Cquential.Core\Tim.Cquential.Core.csproj", "{EF97E182-1F01-4919-BF60-205276BD4B74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tim.RideAnalysis.Core.Tests", "Tim.RideAnalysis.Core.Tests\Tim.RideAnalysis.Core.Tests.csproj", "{CC261918-2EA0-4DFB-843A-84495AF02E9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{EF97E182-1F01-4919-BF60-205276BD4B74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF97E182-1F01-4919-BF60-205276BD4B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF97E182-1F01-4919-BF60-205276BD4B74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC261918-2EA0-4DFB-843A-84495AF02E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC261918-2EA0-4DFB-843A-84495AF02E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC261918-2EA0-4DFB-843A-84495AF02E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC261918-2EA0-4DFB-843A-84495AF02E9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

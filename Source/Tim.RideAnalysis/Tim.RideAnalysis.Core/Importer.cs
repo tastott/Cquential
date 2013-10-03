@@ -10,49 +10,69 @@ namespace Tim.RideAnalysis.Core
 
     public class Importer
     {
-        public Ride ImportRideFromGpxFile(string filepath)
+        public IList<Waypoint> GetWaypointsFromGpxFile(string filepath)
         {
-            var legs = new List<Leg>();
+            var waypoints = new List<Waypoint>();
 
             var gpxDocument = XDocument.Load(filepath);
             var gpxNamespace = gpxDocument.Root.GetDefaultNamespace();
             var trkpts = gpxDocument.Descendants(gpxNamespace + "trkpt").ToList();
 
+            foreach (var trkpt in trkpts)
+            {
+                double lat, lng, elev;
+                DateTime time;
+
+                if (
+                        double.TryParse(trkpt.Attribute("lat").Value, out lat) &&
+                        double.TryParse(trkpt.Attribute("lon").Value, out lng) &&
+                        DateTime.TryParse(trkpt.Element(gpxNamespace + "time").Value, out time) &&
+                        double.TryParse(trkpt.Element(gpxNamespace + "ele").Value, out elev)
+                    )
+                {
+                    
+                    var waypoint = new Waypoint
+                    {
+                        Latitude = lat,
+                        Longitude = lng,
+                        Time = time,
+                        Elevation = elev
+                    };
+
+                    waypoints.Add(waypoint);
+                }
+                else throw new ArgumentException(String.Format("trkpt element is invalid: {0}", trkpt.ToString()));
+            }
+
+            return waypoints;
+        }
+
+        public Ride ImportRideFromGpxFile(string filepath)
+        {
+            var legs = new List<Leg>();
+
+            var trkpts = GetWaypointsFromGpxFile(filepath);
+            trkpts = RideUtilities.SmoothRide(trkpts);
+
             var from = trkpts.First();
 
             foreach (var to in trkpts.Skip(1))
             {
-                double startLat, startLng, finishLat, finishLng, startElev, finishElev;
-                DateTime startTime, finishTime;
+                var metres = DistanceBetweenTwoPoints(from.Latitude, from.Longitude, to.Latitude, to.Longitude) * 1000;
+                int seconds = to.Time.Subtract(from.Time).Seconds;
 
-                if (
-                        double.TryParse(from.Attribute("lat").Value, out startLat) &&
-                        double.TryParse(from.Attribute("lon").Value, out startLng) &&
-                        double.TryParse(to.Attribute("lat").Value, out finishLat) &&
-                        double.TryParse(to.Attribute("lon").Value, out finishLng) &&
-                        DateTime.TryParse(from.Element(gpxNamespace + "time").Value, out startTime) &&
-                        DateTime.TryParse(to.Element(gpxNamespace + "time").Value, out finishTime) &&
-                        double.TryParse(from.Element(gpxNamespace + "ele").Value, out startElev) &&
-                        double.TryParse(to.Element(gpxNamespace + "ele").Value, out finishElev)
-                    )
+                var leg = new Leg
                 {
-                    var metres = DistanceBetweenTwoPoints(startLat, startLng, finishLat, finishLng) * 1000;
-                    int seconds = finishTime.Subtract(startTime).Seconds;
+                    StartTime = from.Time,
+                    FinishTime = to.Time,
+                    StartLat = from.Latitude,
+                    StartLng = from.Longitude,
+                    Metres = metres,
+                    Speed = (metres / seconds) * 3.6,
+                    StartElevation = from.Elevation
+                };
 
-                    var leg = new Leg
-                    {
-                        StartTime = startTime,
-                        FinishTime = finishTime,
-                        StartLat = startLat,
-                        StartLng = startLng,
-                        Metres = metres,
-                        Speed = (metres / seconds) * 3.6,
-                        StartElevation = startElev
-                    };
-
-                    legs.Add(leg);
-                }
-                else throw new ArgumentException("One or both trkpt elements is invalid");
+                legs.Add(leg);
 
                 from = to;
             }
