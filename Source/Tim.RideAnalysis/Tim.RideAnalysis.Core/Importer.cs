@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using System.IO;
 
 namespace Tim.RideAnalysis.Core
 {
@@ -10,11 +11,19 @@ namespace Tim.RideAnalysis.Core
 
     public class Importer
     {
-        public IList<Waypoint> GetWaypointsFromGpxFile(string filepath)
+        public Ride ImportRideFromGpxFile(string filepath)
+        {
+            using (var stream = File.OpenRead(filepath))
+            {
+                return ImportRideFromGpxFile(stream);
+            }
+        }
+
+        public IList<Waypoint> GetWaypointsFromGpxFile(Stream stream)
         {
             var waypoints = new List<Waypoint>();
 
-            var gpxDocument = XDocument.Load(filepath);
+            var gpxDocument = XDocument.Load(stream);
             var gpxNamespace = gpxDocument.Root.GetDefaultNamespace();
             var trkpts = gpxDocument.Descendants(gpxNamespace + "trkpt").ToList();
 
@@ -47,11 +56,11 @@ namespace Tim.RideAnalysis.Core
             return waypoints;
         }
 
-        public Ride ImportRideFromGpxFile(string filepath)
+        public Ride ImportRideFromGpxFile(Stream stream)
         {
             var legs = new List<Leg>();
 
-            var trkpts = GetWaypointsFromGpxFile(filepath);
+            var trkpts = GetWaypointsFromGpxFile(stream);
             trkpts = RideUtilities.SmoothRide(trkpts);
 
             var from = trkpts.First();

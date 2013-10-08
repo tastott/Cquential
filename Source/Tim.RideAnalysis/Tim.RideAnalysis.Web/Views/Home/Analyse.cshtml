@@ -6,3 +6,44 @@
 
 <h2>Analyse</h2>
 <h3>@Model.Filename</h3>
+
+<p>0.Speed > 20 AND ALL([x].Speed > [x-1].Speed) AND MAX(Speed) > MIN(Speed) * 2</p>
+
+@using (Html.BeginForm("Analyse", "Home", FormMethod.Post))
+{
+    <div>
+        @Html.TextAreaFor(m => m.Query)
+        <input type="submit" name="Execute" />
+    </div>
+}
+
+<fieldset>
+    <legend>Results</legend>
+    @if (Model.Matches != null)
+    {
+        <p>Found @Model.Matches.Count() matches</p>
+    
+        foreach (var match in Model.Matches.Take(8))
+        {
+            <div>
+                Match:
+                <table>
+                    @foreach (var leg in match.Legs)
+                    {
+                        <tr>
+                            <td>
+                                @leg.StartTime
+                            </td>
+                            <td>
+                                @leg.Speed
+                            </td>
+                            <td>
+                                @leg.StartLat, @leg.StartLng
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+    }
+</fieldset>
