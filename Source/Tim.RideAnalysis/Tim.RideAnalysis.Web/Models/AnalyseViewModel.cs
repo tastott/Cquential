@@ -10,6 +10,6 @@ namespace Tim.RideAnalysis.Web.Models
     {
         public string Filename { get; set; }
         public string Query { get; set; }
-        public IEnumerable<Match> Matches { get; set; }
+        public IEnumerable<MatchViewModel> Matches { get; set; }
     }
 }

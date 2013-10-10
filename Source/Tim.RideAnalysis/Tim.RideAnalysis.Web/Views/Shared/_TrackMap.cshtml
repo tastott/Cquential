@@ -1,0 +1,46 @@
+﻿@model TrackMapViewModel
+
+@{
+    var mapCanvasId = String.Format("map-canvas-{0}", Guid.NewGuid());
+}
+
+<div id="@mapCanvasId" style="height:200px; width:200px;">
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var center = new google.maps.LatLng(@(Model.Points.First().Item1 + "," + @Model.Points.First().Item2));
+        var myOptions =
+        {
+            zoom: 18,
+            center: center,
+            mapTypeControl: true,
+            mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+            navigationControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+
+        var map = new google.maps.Map(document.getElementById("@mapCanvasId"), myOptions);
+
+        var polylineCoordinates =
+        [
+                @foreach(var point in Model.Points)
+                {
+                    <text>new google.maps.LatLng(@(point.Item1 + "," + @point.Item2)),</text>
+                }
+        ];
+
+        var polyline = new google.maps.Polyline
+        ({
+            path: polylineCoordinates,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            editable: true
+        });
+
+        polyline.setMap(map);
+
+    });
+</script>

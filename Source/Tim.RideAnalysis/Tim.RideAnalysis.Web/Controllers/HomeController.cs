@@ -59,7 +59,7 @@ namespace Tim.RideAnalysis.Web.Controllers
                 var ride = _importer.ImportRideFromGpxFile(stream);
                 var matches = _analyser.SearchRide(ride, model.Query);
 
-                model.Matches = matches;
+                model.Matches = matches.Select(m => new MatchViewModel { Legs = m.Legs });
             }
 
             return View(model);

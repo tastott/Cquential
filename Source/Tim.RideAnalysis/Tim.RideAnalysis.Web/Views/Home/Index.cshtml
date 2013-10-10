@@ -6,6 +6,6 @@
 
 @using(Html.BeginForm("LoadGpx", "Home", FormMethod.Post, new {enctype="multipart/form-data"}))
 {
-    <input type="file" name="file" />
+    <input type="file" accept="application/gpx+xml" name="file" />
     <input type="submit" name="Upload"/>
 }

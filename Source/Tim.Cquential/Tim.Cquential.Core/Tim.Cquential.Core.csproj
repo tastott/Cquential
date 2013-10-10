@@ -62,6 +62,7 @@
     <Compile Include="Expressions\NumericToBooleanOperations\GreaterThanOrEqualToExpression.cs" />
     <Compile Include="Expressions\NumericToNumericOperations\AbstractNumericsToNumericOperationExpression.cs" />
     <Compile Include="Expressions\NumericToBooleanOperations\LessThanOrEqualToExpression.cs" />
+    <Compile Include="Expressions\NumericToNumericOperations\MinusExpression.cs" />
     <Compile Include="Expressions\NumericToNumericOperations\TimesExpression.cs" />
     <Compile Include="Expressions\NumericToNumericOperations\DivideExpression.cs" />
     <Compile Include="Expressions\NumericToNumericOperations\PlusExpression.cs" />

@@ -65,6 +65,11 @@ namespace Tim.Cquential.Core.Expressions
             return new PlusExpression<T>(left, right);
         }
 
+        public IExpression<T> Minus(IExpression<T> left, IExpression<T> right)
+        {
+            return new MinusExpression<T>(left, right);
+        }
+
         public IExpression<T> Divide(IExpression<T> left, IExpression<T> right)
         {
             return new DivideExpression<T>(left, right);
@@ -104,6 +109,8 @@ namespace Tim.Cquential.Core.Expressions
             {
                 case "+":
                     return Plus(left, right);
+                case "-":
+                    return Minus(left, right);
                 case "/":
                     return Divide(left, right);
                 case "<":

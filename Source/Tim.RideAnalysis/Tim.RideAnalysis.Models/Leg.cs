@@ -16,6 +16,7 @@ namespace Tim.RideAnalysis.Models
         public DateTime FinishTime {get; set;}
         
         public DateTime Duration {get; set;}
+        public double TotalMetres { get; set; }
         public double Metres {get; set;}
 
         public double Speed { get; set; }

@@ -64,10 +64,13 @@ namespace Tim.RideAnalysis.Core
             trkpts = RideUtilities.SmoothRide(trkpts);
 
             var from = trkpts.First();
+            double totalMetres = 0;
 
             foreach (var to in trkpts.Skip(1))
             {
                 var metres = DistanceBetweenTwoPoints(from.Latitude, from.Longitude, to.Latitude, to.Longitude) * 1000;
+                totalMetres += metres;
+
                 int seconds = to.Time.Subtract(from.Time).Seconds;
 
                 var leg = new Leg
@@ -77,6 +80,7 @@ namespace Tim.RideAnalysis.Core
                     StartLat = from.Latitude,
                     StartLng = from.Longitude,
                     Metres = metres,
+                    TotalMetres = totalMetres,
                     Speed = (metres / seconds) * 3.6,
                     StartElevation = from.Elevation
                 };
