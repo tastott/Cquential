@@ -27,7 +27,7 @@
         {
             <div>
                 Match:
-                <table>
+                @*<table>
                     @foreach (var leg in match.Legs)
                     {
                         <tr>
@@ -42,7 +42,7 @@
                             </td>
                         </tr>
                     }
-                </table>
+                </table>*@
                 @Html.Partial("_TrackMap", match.TrackMap)
             </div>
         }

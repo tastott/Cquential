@@ -21,6 +21,9 @@ namespace Tim.Cquential.Core.Matching
                 //Add new match candidate starting on this item
                 var newCandidate = query.NewMatchCandidate();
                 matchCandidates.Add(new MatchCandidateWithPreviousState<T>(newCandidate));
+                
+                //Store up to one completed match ending at or one item before this one
+                Match<T> completedMatch = null;
 
                 //Add current leg to candidates and evaluate
                 var closedCandidates = new List<MatchCandidateWithPreviousState<T>>();
@@ -36,22 +39,25 @@ namespace Tim.Cquential.Core.Matching
                     {
                         closedCandidates.Add(candidateState);
 
-                        if (candidateState.PreviousMatch != null)
+                        //Take first (longest) match
+                        if (candidateState.PreviousMatch != null && completedMatch == null)
                         {
-                            completedMatches.Add(candidateState.PreviousMatch);
+                            completedMatch = candidateState.PreviousMatch;
                         }
                     }
                     else if (counter == itemCount - 1)
                     {
-                        if (result.IsMatch)
+                        //Take first (longest) match
+                        if (completedMatch == null)
                         {
-                            completedMatches.Add(candidate.GetMatch());
-                            break;
-                        }
-                        else if (candidateState.PreviousMatch != null)
-                        {
-                            completedMatches.Add(candidateState.PreviousMatch);
-                            break;
+                            if (result.IsMatch)
+                            {
+                                completedMatch = candidate.GetMatch();
+                            }
+                            else if (candidateState.PreviousMatch != null)
+                            {
+                                completedMatch = candidateState.PreviousMatch;
+                            }
                         }
                         
                     }
@@ -61,6 +67,8 @@ namespace Tim.Cquential.Core.Matching
 
                 //Remove closed
                 matchCandidates.RemoveAll(mb => closedCandidates.Contains(mb));
+
+                if (completedMatch != null) completedMatches.Add(completedMatch);
 
                 ++counter;
             }

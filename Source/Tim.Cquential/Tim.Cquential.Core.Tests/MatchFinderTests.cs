@@ -37,22 +37,20 @@ namespace Tim.Cquential.Core.Matching
         }
 
         [TestMethod]
-        public void FindFindsOverlappingMatches()
+        public void FindIgnoresShorterOverlappingMatchesWithSameEnd()
         {
-            var sequence = new int[] { 1, 2, 3, 2, 1 };
-            var query = new SumQuery(s => Tuple.Create(s == 6, s < 6));
+            var sequence = new int[] { 1, 2, 3, 4, 5, 20 };
+            var query = new SumQuery(s => Tuple.Create(s >= 6 && s < 16, s < 16 ));
             var finder = new MatchFinder<int>();
             var expected = new int[][] 
             { 
-                new int[]{1, 2, 3 },
-                new int[]{3, 2, 1 }
+                new int[]{1, 2, 3, 4, 5 },
             };
 
             var matches = finder.FindMatches(sequence, query);
 
             matches.Should()
-                .ContainSingle(m => m.Sequence.SequenceEqual(expected[0]))
-                .And.ContainSingle(m => m.Sequence.SequenceEqual(expected[1]));
+                .OnlyContain(m => m.Sequence.SequenceEqual(expected[0]));
         }
 
         [TestMethod]
@@ -70,7 +68,7 @@ namespace Tim.Cquential.Core.Matching
         }
 
         [TestMethod]
-        public void FindFindsLongestMatch()
+        public void FindFindsLongestMatchFromSameStartPoint()
         {
             var sequence = new int[] { 1, 2, 3, 0, 0, 0 };
             var query = new SumQuery(s => Tuple.Create(s == 6, s < 6));

@@ -2,6 +2,10 @@
 
 @{
     var mapCanvasId = String.Format("map-canvas-{0}", Guid.NewGuid());
+    var firstPoint = Model.Points.First();
+    var lastPoint = Model.Points.Last();
+
+    var centre = Tuple.Create<double, double>((firstPoint.Item1 + lastPoint.Item1) / 2, (firstPoint.Item2 + lastPoint.Item2) / 2);
 }
 
 <div id="@mapCanvasId" style="height:200px; width:200px;">
@@ -10,10 +14,10 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var center = new google.maps.LatLng(@(Model.Points.First().Item1 + "," + @Model.Points.First().Item2));
+        var center = new google.maps.LatLng(@(centre.Item1 + "," + centre.Item2));
         var myOptions =
         {
-            zoom: 18,
+            zoom: 12,
             center: center,
             mapTypeControl: true,
             mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU },
@@ -27,7 +31,7 @@
         [
                 @foreach(var point in Model.Points)
                 {
-                    <text>new google.maps.LatLng(@(point.Item1 + "," + @point.Item2)),</text>
+                    <text>new google.maps.LatLng(@(point.Item1 + "," + point.Item2)),</text>
                 }
         ];
 
