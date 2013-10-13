@@ -11,12 +11,12 @@ namespace Tim.Cquential.Core.Aggregation
 
     public class AggregatingContextExpression<T> : IExpression<T>
     {
-        public string AggregatorKey { get; private set; }
+        private string _aggregatorKey;
         private NumericMutability _mutability;
 
         public AggregatingContextExpression(string aggregatorKey, NumericMutability mutability)
         {
-            AggregatorKey = aggregatorKey;
+            _aggregatorKey = aggregatorKey;
             _mutability = mutability;
         }
 
@@ -34,7 +34,7 @@ namespace Tim.Cquential.Core.Aggregation
         {
             var aggregatorContext = context as AggregatingMatchCandidate<T>;
 
-            return aggregatorContext.GetAggregator(AggregatorKey).Value;
+            return aggregatorContext.GetAggregator(_aggregatorKey).Value;
         }
 
         public NumericMutability GetNumericMutability()
@@ -43,6 +43,12 @@ namespace Tim.Cquential.Core.Aggregation
         }
 
         public bool IsBooleanMutable(IMatchCandidate<T> context)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
         {
             throw new NotImplementedException();
         }

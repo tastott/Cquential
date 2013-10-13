@@ -35,5 +35,8 @@ namespace Tim.Cquential.Core.Expressions.BooleanToBooleanOperations
         }
 
         public abstract bool IsBooleanMutable(IMatchCandidate<T> context);
+
+
+        public abstract Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context);
     }
 }

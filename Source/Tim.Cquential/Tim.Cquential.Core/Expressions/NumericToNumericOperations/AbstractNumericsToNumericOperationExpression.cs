@@ -46,5 +46,11 @@ namespace Tim.Cquential.Core.Expressions.NumericToNumericOperations
         {
             throw new InvalidOperationException("This operation does not have a boolean mutability.");  
         }
+
+
+        public Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
+        {
+            throw new InvalidOperationException("This operation does not have a boolean status.");  
+        }
     }
 }

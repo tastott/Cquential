@@ -15,9 +15,9 @@ namespace Tim.Cquential.Core.Matching
             _aggregators = aggregators;
         }
 
-        public override void Put(T item)
+        public override void Put(T item, int index)
         {
-            base.Put(item);
+            base.Put(item, index);
             foreach (var a in _aggregators.Values) a.Put(item);
         }
 

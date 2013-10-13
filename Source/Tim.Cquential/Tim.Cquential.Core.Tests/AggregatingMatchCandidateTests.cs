@@ -33,7 +33,7 @@ namespace Tim.Cquential.Core.Matching
             };
             var candidate = new AggregatingMatchCandidate<int>(aggregators);
 
-            candidate.Put(1);
+            candidate.Put(1, 0);
 
             aggregatorMocker.Verify(a => a.Put(1), Times.Once());
         }
@@ -43,16 +43,14 @@ namespace Tim.Cquential.Core.Matching
         {
             var aggregators = new Dictionary<string, IAggregator<int>>();
             var candidate = new AggregatingMatchCandidate<int>(aggregators);
-            var expected = new int[] { 1, 2, 3 };
+            var expected = new int[] { 2, 3, 4 };
 
-            candidate.Put(1);
-            candidate.Put(2);
-            candidate.Put(3);
+            candidate.Put(2, 0);
+            candidate.Put(3, 1);
+            candidate.Put(4, 2);
 
-            candidate.GetMatch()
-                .Sequence
-                .Should()
-                .Equal(expected);
+            candidate.FromIndex.Should().Be(0);
+            candidate.ToIndex.Should().Be(2);
         }
     }
 }

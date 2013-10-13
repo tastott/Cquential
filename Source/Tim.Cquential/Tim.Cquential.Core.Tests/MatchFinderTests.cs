@@ -84,6 +84,9 @@ namespace Tim.Cquential.Core.Matching
 
     internal class SummingMatchCandidate : IMatchCandidate<int>
     {
+        private int? _firstIndex;
+        private int? _lastIndex;
+
         private int _sum;
         private IList<int> _sequence;
 
@@ -92,8 +95,11 @@ namespace Tim.Cquential.Core.Matching
             _sequence = new List<int>();
         }
 
-        public void Put(int item)
+        public void Put(int item, int index)
         {
+            if (!_firstIndex.HasValue) _firstIndex = index;
+            _lastIndex = index;
+
             _sequence.Add(item);
             _sum += item;
         }
@@ -104,9 +110,14 @@ namespace Tim.Cquential.Core.Matching
         }
 
 
-        public Match<int> GetMatch()
+        public int FromIndex
         {
-            return new Match<int> { Sequence = _sequence.ToList() };
+            get { return _firstIndex.Value; }
+        }
+
+        public int ToIndex
+        {
+            get {return _lastIndex.Value; }
         }
     }
 

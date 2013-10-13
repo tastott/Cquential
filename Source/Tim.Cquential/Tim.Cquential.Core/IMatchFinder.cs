@@ -14,6 +14,6 @@ namespace Tim.Cquential.Core
         /// <param name="sequence"></param>
         /// <param name="query"></param>
         /// <returns></returns>
-        IEnumerable<Match<T>> FindMatches(IEnumerable<T> sequence, IQuery<T> query);
+        IEnumerable<Match<T>> FindMatches(T[] sequence, IQuery<T> query);
     }
 }

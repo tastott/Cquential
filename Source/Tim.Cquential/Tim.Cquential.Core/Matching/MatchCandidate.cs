@@ -8,31 +8,18 @@ namespace Tim.Cquential.Core.Matching
 {
     public class MatchCandidate<T> : IMatchCandidate<T>
     {
-        protected IList<T> _sequence;
+        protected int? _firstIndex;
+        protected int? _lastIndex;
 
-        public MatchCandidate()
+        public virtual void Put(T item, int index)
         {
-            _sequence = new List<T>();
+            if (!_firstIndex.HasValue) _firstIndex = index;
+            _lastIndex = index;
         }
 
-        public virtual void Put(T item)
-        {
-            _sequence.Add(item);
-        }
+        public int FromIndex { get { return _firstIndex.Value; } }
+        public int ToIndex { get { return _lastIndex.Value; } }
 
-        public Match<T> GetMatch()
-        {
-            return new Match<T>
-            {
-                Sequence = _sequence.ToList()
-            };
-        }
-
-        public virtual IEnumerable<T> Sequence
-        {
-            get { return _sequence; }
-        }
-
-        
+        public IEnumerable<T> Sequence { get { return null; } }
     }
 }

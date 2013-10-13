@@ -61,5 +61,11 @@ namespace Tim.Cquential.Core.Expressions
 
             return lambdaExp.Compile();
         }
+
+
+        public Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -43,5 +43,11 @@ namespace Tim.Cquential.Core.Expressions
             if (that != null) return this._value == that._value;
             else return false;
         }
+
+
+        public Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
+        {
+            throw new Exception("ConstantExpression cannot return a value of type bool");
+        }
     }
 }

@@ -28,6 +28,8 @@ namespace Tim.Cquential.Core.Expressions
         /// </summary>
         /// <returns></returns>
         bool IsBooleanMutable(IMatchCandidate<T> context);
+
+        Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context);
     }
 
     public enum NumericMutability

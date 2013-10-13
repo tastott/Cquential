@@ -169,7 +169,7 @@ namespace Tim.Cquential.Core.Expressions
             return new ContextExpression<T>(c => memberFunc(c.Sequence.ToList()[itemIndex]), NumericMutability.Fixed);
         }
 
-        public IExpression<T> AllTrue(string @operator, int leftItemOffset, string leftItemMember, int rightItemOffset, string rightItemMember)
+        public virtual IExpression<T> AllTrue(string @operator, int leftItemOffset, string leftItemMember, int rightItemOffset, string rightItemMember)
         {
             var operationFunc = Operators.GetOperationFunc(@operator);
             var leftItemMemberFunc = GetMemberFunc(leftItemMember);

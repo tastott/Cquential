@@ -8,16 +8,18 @@ namespace Tim.Cquential.Core.Matching
 {
     public class MatchFinder<T> : IMatchFinder<T>
     {
-        public IEnumerable<Match<T>> FindMatches(IEnumerable<T> sequence, IQuery<T> query)
+        public IEnumerable<Match<T>> FindMatches(T[] sequence, IQuery<T> query)
         {
             var matchCandidates = new List<MatchCandidateWithPreviousState<T>>();
             var completedMatches = new List<Match<T>>();
 
             int counter = 0;
-            int itemCount = sequence.Count();
+            int itemCount = sequence.Length;
 
-            foreach (var item in sequence)
+            for(int i = 0; i < itemCount; i++)
             {
+                var item = sequence[i];
+
                 //Add new match candidate starting on this item
                 var newCandidate = query.NewMatchCandidate();
                 matchCandidates.Add(new MatchCandidateWithPreviousState<T>(newCandidate));
@@ -31,7 +33,7 @@ namespace Tim.Cquential.Core.Matching
                 {
                     var candidate = candidateState.Candidate;
 
-                    candidate.Put(item);
+                    candidate.Put(item, i);
                     var result = query.IsMatch(candidate);
 
                     //Process definite non-matches
@@ -40,9 +42,9 @@ namespace Tim.Cquential.Core.Matching
                         closedCandidates.Add(candidateState);
 
                         //Take first (longest) match
-                        if (candidateState.PreviousMatch != null && completedMatch == null)
+                        if (candidateState.LastMatchIndex.HasValue && completedMatch == null)
                         {
-                            completedMatch = candidateState.PreviousMatch;
+                            completedMatch = new Match<T>(candidate.FromIndex, candidateState.LastMatchIndex.Value, sequence);
                         }
                     }
                     else if (counter == itemCount - 1)
@@ -52,17 +54,17 @@ namespace Tim.Cquential.Core.Matching
                         {
                             if (result.IsMatch)
                             {
-                                completedMatch = candidate.GetMatch();
+                                completedMatch = new Match<T>(candidate.FromIndex, candidate.ToIndex, sequence);
                             }
-                            else if (candidateState.PreviousMatch != null)
+                            else if (candidateState.LastMatchIndex.HasValue)
                             {
-                                completedMatch = candidateState.PreviousMatch;
+                                completedMatch = new Match<T>(candidate.FromIndex, candidateState.LastMatchIndex.Value, sequence);
                             }
                         }
                         
                     }
 
-                    if (result.IsMatch) candidateState.PreviousMatch = candidate.GetMatch();
+                    if (result.IsMatch) candidateState.LastMatchIndex = i;
                 }
 
                 //Remove closed
@@ -85,6 +87,6 @@ namespace Tim.Cquential.Core.Matching
         }
 
         public IMatchCandidate<T> Candidate { get; private set; }
-        public Match<T> PreviousMatch { get; set; }
+        public int? LastMatchIndex { get; set; }
     }
 }

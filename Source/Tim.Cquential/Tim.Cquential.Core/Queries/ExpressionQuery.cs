@@ -24,10 +24,9 @@ namespace Tim.Cquential.Core.Queries
 
         public virtual MatchStatus IsMatch(IMatchCandidate<T> candidate)
         {
-            var result = Expression.GetBoolValue(candidate);
-            var mutable = Expression.IsBooleanMutable(candidate);
+            var status = Expression.GetBoolStatus(candidate);
 
-            return new MatchStatus(result, mutable);
+            return new MatchStatus(status.Item1, status.Item2);
         }
 
         public virtual IMatchCandidate<T> NewMatchCandidate()

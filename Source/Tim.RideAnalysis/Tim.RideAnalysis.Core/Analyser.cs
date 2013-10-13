@@ -20,7 +20,7 @@ namespace Tim.RideAnalysis.Core
             var query = parser.Parse(queryString);
             var finder = new MatchFinder<Leg>();
 
-            var matches = finder.FindMatches(ride.Legs, query);
+            var matches = finder.FindMatches(ride.Legs.ToArray(), query);
 
             return matches.Select(m => new Tim.RideAnalysis.Models.Match
             {

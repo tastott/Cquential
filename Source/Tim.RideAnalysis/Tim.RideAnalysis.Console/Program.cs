@@ -18,22 +18,24 @@ namespace Tim.RideAnalysis.Console
         {
             string command = null;
 
-            while (command != "x")
-            {
-                if (command != null)
-                {
-                    var time = ExecuteCommand(command);
-                    System.Console.WriteLine("\nExecution took {0} milliseconds.", time);
-                }
+            ExecuteCommand("n.StartElevation > 0.StartElevation + 30");
+            //command = System.Console.ReadLine();
+            //while (command != "x")
+            //{
+            //    if (command != null)
+            //    {
+            //        var time = ExecuteCommand(command);
+            //        System.Console.WriteLine("\nExecution took {0} milliseconds.", time);
+            //    }
 
-                System.Console.WriteLine("Type a query or 'x' to exit");
-                command = System.Console.ReadLine();
-            }
+            //    System.Console.WriteLine("Type a query or 'x' to exit");
+            //    command = System.Console.ReadLine();
+            //}
         }
 
         private static int ExecuteCommand(string command)
         {
-            if (ride == null) ride = new Importer().ImportRideFromGpxFile(@"C:\users\tim\downloads\evening ride.gpx");
+            if (ride == null) ride = new Importer().ImportRideFromGpxFile(@"C:\users\tim\downloads\lunch ride.gpx");
             if (analyser == null) analyser = new Analyser();
 
             var startTime = DateTime.Now;

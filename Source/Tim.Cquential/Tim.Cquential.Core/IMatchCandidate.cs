@@ -8,7 +8,8 @@ namespace Tim.Cquential.Core
 {
     public interface IMatchCandidate<T>
     {
-        void Put(T item);
-        Match<T> GetMatch();
+        void Put(T item, int index);
+        int FromIndex { get; }
+        int ToIndex { get; }
     }
 }

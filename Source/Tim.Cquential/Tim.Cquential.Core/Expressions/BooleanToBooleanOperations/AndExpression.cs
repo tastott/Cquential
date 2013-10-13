@@ -43,5 +43,24 @@ namespace Tim.Cquential.Core.Expressions.BooleanToBooleanOperations
             if (that != null) return this._left.Equals(that._left) && this._right.Equals(that._right);
             else return false;
         }
+
+        public override Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
+        {
+            var leftStatus = _left.GetBoolStatus(context);
+            var rightStatus = _right.GetBoolStatus(context);
+
+            var value = leftStatus.Item1 && rightStatus.Item1;
+            bool isMutable;
+
+            if (!leftStatus.Item1 && !leftStatus.Item2)
+                isMutable =  false;
+            else if (!rightStatus.Item1 && !rightStatus.Item2)
+                isMutable =  false;
+            else if (leftStatus.Item1 && rightStatus.Item1 && !leftStatus.Item2 && !rightStatus.Item2)
+                isMutable =  false;
+            else isMutable =  true;
+
+            return Tuple.Create(value, isMutable);
+        }
     }
 }

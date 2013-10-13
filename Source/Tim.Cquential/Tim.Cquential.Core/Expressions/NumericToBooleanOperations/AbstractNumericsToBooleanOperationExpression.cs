@@ -47,5 +47,17 @@ namespace Tim.Cquential.Core.Expressions.NumericToBooleanOperations
 
             return Operators.GetBooleanOperatorMutabilities(_operator)[leftMutability, rightMutability, currentValue] == 1;
         }
+
+
+        public Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
+        {
+            int leftMutability = (int)_left.GetNumericMutability();
+            int rightMutability = (int)_right.GetNumericMutability();
+            int currentValue = GetBoolValue(context) ? 1 : 0;
+
+            var isMutable =  Operators.GetBooleanOperatorMutabilities(_operator)[leftMutability, rightMutability, currentValue] == 1;
+
+            return Tuple.Create(currentValue == 1, isMutable);
+        }
     }
 }

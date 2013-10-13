@@ -60,5 +60,14 @@ namespace Tim.Cquential.Core.Expressions
             if (!value) return false;
             else return true;
         }
+
+
+        public Tuple<bool, bool> GetBoolStatus(IMatchCandidate<T> context)
+        {
+            var value = GetBoolValue(context);
+
+            if (!value) return Tuple.Create(value, false);
+            else return Tuple.Create(value, true);
+        }
     }
 }
