@@ -22,18 +22,7 @@ namespace Tim.RideAnalysis.Utilities
 
         public static IEnumerable<T> Coarsen<T>(this IEnumerable<T> source, int coarseness)
         {
-            T[] destination = new T[(source.Count()/ coarseness)+1];
-
-            int sourceIndex = 0;
-
-            foreach (var item in source)
-            {
-                if (sourceIndex % coarseness == 0) destination[sourceIndex / coarseness] = item;
-
-                ++sourceIndex;
-            }
-
-            return destination;
+            return source.Where((x,i) => i % coarseness == 0);
         }
     }
 }

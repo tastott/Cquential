@@ -7,6 +7,7 @@ namespace Tim.RideAnalysis.Models
 {
     public class Ride
     {
+        public string Name { get; set; }
         public IEnumerable<Leg> Legs { get; set; }
     }
 }

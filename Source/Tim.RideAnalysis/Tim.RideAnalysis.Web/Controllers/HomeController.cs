@@ -12,8 +12,7 @@ namespace Tim.RideAnalysis.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private static HttpPostedFileBase _uploadedFile;
-        private static Byte[] _bytes;
+        private static Ride _ride;
 
         private Analyser _analyser;
         private Importer _importer;
@@ -32,10 +31,21 @@ namespace Tim.RideAnalysis.Web.Controllers
         [HttpPost]
         public ActionResult LoadGpx(HttpPostedFileBase file)
         {
-            _uploadedFile = file;
-            _bytes = new byte[_uploadedFile.InputStream.Length];
-            _uploadedFile.InputStream.Read(_bytes, 0, _bytes.Length);
+            var bytes = new byte[file.InputStream.Length];
+            file.InputStream.Read(bytes, 0, bytes.Length);
 
+            using (var stream = new MemoryStream(bytes))
+            {
+                _ride = _importer.ImportRideFromGpxStream(stream, file.FileName);
+            }
+
+            return RedirectToAction("Analyse");
+        }
+
+        [HttpPost]
+        public ActionResult GetRideFromStrava(string StravaActivityId)
+        {
+            _ride = _importer.ImportRideFromStravaApi(int.Parse(StravaActivityId));
 
             return RedirectToAction("Analyse");
         }
@@ -45,7 +55,7 @@ namespace Tim.RideAnalysis.Web.Controllers
         {
             var model = new AnalyseViewModel
             {
-                Filename = _uploadedFile.FileName,
+                Filename = _ride.Name,
                 Query = query
             };
 
@@ -56,14 +66,9 @@ namespace Tim.RideAnalysis.Web.Controllers
         [HttpPost]
         public ActionResult Analyse(AnalyseViewModel model)
         {
+            var matches = _analyser.SearchRide(_ride, model.Query);
 
-            using (var stream = new MemoryStream(_bytes))
-            {
-                var ride = _importer.ImportRideFromGpxFile(stream);
-                var matches = _analyser.SearchRide(ride, model.Query);
-
-                model.Matches = matches.Select(m => ToMatchViewModel(m));
-            }
+            model.Matches = matches.Select(m => ToMatchViewModel(m));
 
             return View(model);
         }

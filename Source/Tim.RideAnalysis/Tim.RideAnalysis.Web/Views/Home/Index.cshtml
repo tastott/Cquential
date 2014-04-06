@@ -9,3 +9,9 @@
     <input type="file" accept="application/gpx+xml" name="file" />
     <input type="submit" name="Upload"/>
 }
+
+@using(Html.BeginForm("GetRideFromStrava", "Home", FormMethod.Post))
+{
+    <input type="text" name="StravaActivityId" value="125142637"/>
+    <input type="submit" name="Get"/>
+}

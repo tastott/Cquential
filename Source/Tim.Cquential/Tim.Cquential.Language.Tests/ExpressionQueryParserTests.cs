@@ -355,7 +355,7 @@ namespace Tim.Cquential.Language.Parsers
         public double StartElevation { get; set; }
     }
 
-    internal class TestMatchCandidate<T> : MatchCandidate<T>
+    internal class TestMatchCandidate<T> : IMatchCandidate<T>
     {
         private IEnumerable<T> _sequence;
 
@@ -364,6 +364,21 @@ namespace Tim.Cquential.Language.Parsers
             _sequence = sequence;
         }
 
-        public override IEnumerable<T> Sequence { get { return _sequence; } }
+        public IEnumerable<T> Sequence { get { return _sequence; } }
+
+        public void Put(T item, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int FromIndex
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int ToIndex
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
