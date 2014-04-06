@@ -30,5 +30,10 @@ namespace Tim.RideAnalysis.Core
 
             return smoothedPoints;
         }
+
+        public static Leg[] Coarsen(Leg[] legs, int coarseness)
+        {
+            return legs;
+        }
     }
 }

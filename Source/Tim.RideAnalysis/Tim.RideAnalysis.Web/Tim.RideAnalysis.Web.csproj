@@ -194,6 +194,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Analyse.cshtml" />
     <Content Include="Views\Shared\_TrackMap.cshtml" />
+    <Content Include="Views\Shared\_Matches.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -209,6 +210,10 @@
     <ProjectReference Include="..\Tim.RideAnalysis.Models\Tim.RideAnalysis.Models.csproj">
       <Project>{bc04431d-0f06-4bbc-98b0-66a5b23d5def}</Project>
       <Name>Tim.RideAnalysis.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tim.RideAnalysis.Utilities\Tim.RideAnalysis.Utilities.csproj">
+      <Project>{dc4e2b47-6e43-497f-a6b5-232d894b0d90}</Project>
+      <Name>Tim.RideAnalysis.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

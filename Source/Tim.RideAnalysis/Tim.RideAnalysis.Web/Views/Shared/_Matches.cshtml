@@ -1,0 +1,57 @@
+﻿@model IEnumerable<MatchViewModel>
+
+@{
+    int columns = 2;
+    int rows = (Model.Count() / columns) + 1;
+    var matches = Model.ToArray();
+}
+<fieldset>
+    <legend>Results</legend>
+    
+        <p>Found @Model.Count() matches</p>
+    
+        <table>
+            @for(int r = 0; r < rows; r++)
+            {
+                <tr>
+                    @for(int c = 0; c < columns; c++)
+                    {
+                        var index = (r * columns) + c;
+                        
+                        if(index >= matches.Length)
+                        {
+                            <td></td><td></td>
+                        }
+                        else
+                        {
+                            var match = matches[index];
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>Distance:</td>
+                                        <td>@match.Distance.ToString("F1")m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Speed:</td>
+                                        <td>@match.AverageSpeed.ToString("F1")kph</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Elevation diff:</td>
+                                        <td>@match.ElevationDifference.ToString("F1")m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gradient:</td>
+                                        <td>@match.Gradient.ToString("P1")</td>
+                                    </tr>
+                                </table>
+                            </td>
+                             <td>
+                                @Html.Partial("_TrackMap", match.TrackMap)
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+    }
+</fieldset>

@@ -7,7 +7,14 @@
 <h2>Analyse</h2>
 <h3>@Model.Filename</h3>
 
-<p>0.Speed > 20 AND ALL([x].Speed > [x-1].Speed) AND MAX(Speed) > MIN(Speed) * 2</p>
+<div>
+    <h3>Previous queries:</h3>
+    @foreach (var previousQuery in Model.PreviousQueries)
+    {
+        <p>@Html.ActionLink(previousQuery, "Analyse", new {query = previousQuery})</p>
+    }
+</div>
+
 
 @using (Html.BeginForm("Analyse", "Home", FormMethod.Post))
 {
@@ -17,34 +24,7 @@
     </div>
 }
 
-<fieldset>
-    <legend>Results</legend>
-    @if (Model.Matches != null)
-    {
-        <p>Found @Model.Matches.Count() matches</p>
-    
-        foreach (var match in Model.Matches.Take(8))
-        {
-            <div>
-                Match:
-                @*<table>
-                    @foreach (var leg in match.Legs)
-                    {
-                        <tr>
-                            <td>
-                                @leg.StartTime
-                            </td>
-                            <td>
-                                @leg.Speed
-                            </td>
-                            <td>
-                                @leg.StartLat, @leg.StartLng
-                            </td>
-                        </tr>
-                    }
-                </table>*@
-                @Html.Partial("_TrackMap", match.TrackMap)
-            </div>
-        }
-    }
-</fieldset>
+@if (Model.Matches != null)
+{
+    <text>@Html.Partial("_Matches", Model.Matches)</text>
+}

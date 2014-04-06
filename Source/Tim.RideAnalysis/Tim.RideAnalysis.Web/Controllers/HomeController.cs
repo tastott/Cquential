@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Tim.RideAnalysis.Web.Models;
 using Tim.RideAnalysis.Core;
 using System.IO;
+using Tim.RideAnalysis.Models;
 
 namespace Tim.RideAnalysis.Web.Controllers
 {
@@ -40,14 +41,16 @@ namespace Tim.RideAnalysis.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Analyse()
+        public ActionResult Analyse(string query)
         {
             var model = new AnalyseViewModel
             {
-                Filename = _uploadedFile.FileName
+                Filename = _uploadedFile.FileName,
+                Query = query
             };
 
-            return View(model);
+            if (String.IsNullOrEmpty(query)) return View(model);
+            else return Analyse(model);
         }
 
         [HttpPost]
@@ -59,10 +62,28 @@ namespace Tim.RideAnalysis.Web.Controllers
                 var ride = _importer.ImportRideFromGpxFile(stream);
                 var matches = _analyser.SearchRide(ride, model.Query);
 
-                model.Matches = matches.Select(m => new MatchViewModel { Legs = m.Legs });
+                model.Matches = matches.Select(m => ToMatchViewModel(m));
             }
 
             return View(model);
+        }
+
+        private MatchViewModel ToMatchViewModel(Match match)
+        {
+            var first = match.Legs.First();
+            var last = match.Legs.Last();
+
+            var distance = (last.TotalMetres - first.TotalMetres);
+            var elevationDifference = last.StartElevation - first.StartElevation;
+
+            return new MatchViewModel
+            {
+                Legs = match.Legs,
+                AverageSpeed = distance * 0.001 / (last.FinishTime - first.StartTime).TotalHours,
+                Distance = distance,
+                ElevationDifference = elevationDifference,
+                Gradient = elevationDifference / distance
+            };
         }
     }
 }
