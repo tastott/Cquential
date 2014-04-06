@@ -177,8 +177,8 @@ namespace Tim.Cquential.Core.Expressions
 
             if (leftItemOffset != 0 || rightItemOffset != -1) throw new Exception("Offsets not supported");
 
-            Func<MatchCandidate<T>, double[]> leftValuesFunc = c => c.Sequence.Skip(1).Select(l => leftItemMemberFunc(l)).ToArray();
-            Func<MatchCandidate<T>, double[]> rightValuesFunc = c => c.Sequence.Take(c.Sequence.Count() - 1).Select(l => rightItemMemberFunc(l)).ToArray();
+            Func<IMatchCandidate<T>, double[]> leftValuesFunc = c => c.Sequence.Skip(1).Select(l => leftItemMemberFunc(l)).ToArray();
+            Func<IMatchCandidate<T>, double[]> rightValuesFunc = c => c.Sequence.Take(c.Sequence.Count() - 1).Select(l => rightItemMemberFunc(l)).ToArray();
 
             return new AllExpression<T>(operationFunc, leftValuesFunc, rightValuesFunc);
         }

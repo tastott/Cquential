@@ -119,6 +119,12 @@ namespace Tim.Cquential.Core.Matching
         {
             get {return _lastIndex.Value; }
         }
+
+
+        public IEnumerable<int> Sequence
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 
     internal class SumQuery : IQuery<int>

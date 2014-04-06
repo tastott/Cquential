@@ -11,5 +11,6 @@ namespace Tim.Cquential.Core
         void Put(T item, int index);
         int FromIndex { get; }
         int ToIndex { get; }
+        IEnumerable<T> Sequence { get; }
     }
 }

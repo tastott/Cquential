@@ -10,10 +10,10 @@ namespace Tim.Cquential.Core.Expressions
 
     public class ContextExpression<T> : IExpression<T>
     {
-        private Func<MatchCandidate<T>, double> _valueFunc;
+        private Func<IMatchCandidate<T>, double> _valueFunc;
         private NumericMutability _mutability;
 
-        public ContextExpression(Func<MatchCandidate<T>, double> valueFunc, NumericMutability mutability)
+        public ContextExpression(Func<IMatchCandidate<T>, double> valueFunc, NumericMutability mutability)
         {
             _valueFunc = valueFunc;
             _mutability = mutability;
@@ -35,7 +35,7 @@ namespace Tim.Cquential.Core.Expressions
 
         public double GetNumericValue(IMatchCandidate<T> context)
         {
-            return _valueFunc(context as MatchCandidate<T>);
+            return _valueFunc(context);
         }
 
         public bool IsBooleanMutable(IMatchCandidate<T> context)
