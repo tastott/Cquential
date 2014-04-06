@@ -39,9 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fluent\FluentExpression.cs" />
-    <Compile Include="Fluent\FluentOperandBuilder.cs" />
-    <Compile Include="Fluent\FluentOperatorBuilder.cs" />
+    <Compile Include="Fluent\FluentExpressionBuilder.cs" />
     <Compile Include="IQueryParser.cs" />
     <Compile Include="ITokenizer.cs" />
     <Compile Include="ITokenShunter.cs" />
