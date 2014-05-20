@@ -13,9 +13,19 @@ namespace Tim.Cquential.Language.Tokens
         {
             Queue<Token> output = new Queue<Token>();
             Stack<Token> stack = new Stack<Token>();
+            Stack<int> parameterCounts = new Stack<int>();
 
             foreach (var token in infixTokens)
             {
+                if (token.Type != TokenType.LeftParenthesis && token.Type != TokenType.RightParenthesis && parameterCounts.Any())
+                {
+                    if (parameterCounts.Peek() == 0)
+                    {
+                        parameterCounts.Pop();
+                        parameterCounts.Push(1);
+                    }
+                }
+
                 if (token.Type == TokenType.Operator)
                 {
                     while (stack.Any() && stack.Peek().Type == TokenType.Operator)
@@ -33,9 +43,15 @@ namespace Tim.Cquential.Language.Tokens
                 {
                     output.Enqueue(token);
                 }
-                else if (token.Type == TokenType.LeftParenthesis || token.Type == TokenType.Function)
+                else if (token.Type == TokenType.LeftParenthesis)
                 {
                     stack.Push(token);
+                }
+                else if(token.Type == TokenType.Function)
+                {
+                    stack.Push(token);
+
+                    parameterCounts.Push(0);
                 }
                 else if (token.Type == TokenType.RightParenthesis)
                 {
@@ -45,10 +61,16 @@ namespace Tim.Cquential.Language.Tokens
                     
                     stack.Pop(); //Discard left parenthesis
 
-                    if (stack.Peek().Type == TokenType.Function) output.Enqueue(stack.Pop()); //Pop function onto output if present
+                    if (stack.Any() && stack.Peek().Type == TokenType.Function) //Pop function onto output if present
+                    {
+                        var function = stack.Pop();
+                        function.ParameterCount = parameterCounts.Pop();
+                        output.Enqueue(function); 
+                    }
                 }
                 else throw new Exception(String.Format("Unrecognised token type: '{0}'", token.Type.ToString()));
 
+ 
             }
 
             while (stack.Any()) output.Enqueue(stack.Pop());

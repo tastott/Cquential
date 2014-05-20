@@ -17,7 +17,7 @@ namespace Tim.RideAnalysis.Core
     {
         public Ride ImportRideFromStravaApi(int activityId)
         {
-            var stravaAuth = new StaticAuthentication("ad49a857719b291e9e71ca45c7cc4e3a661ad505");
+            var stravaAuth = new StaticAuthentication("");
             var stravaClient = new com.strava.api.Client.StravaClient(stravaAuth);
 
             var activity = stravaClient.Activities.GetActivity(activityId.ToString(), false);

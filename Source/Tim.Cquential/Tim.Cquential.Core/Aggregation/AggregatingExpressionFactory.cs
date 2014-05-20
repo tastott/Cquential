@@ -15,6 +15,15 @@ namespace Tim.Cquential.Core.Aggregation
             AggregatorFactory = new Dictionary<string, Func<IAggregator<T>>>();
         }
 
+        public override IExpression<T> Count()
+        {
+            var aggregatorKey = "count";
+
+            AddAggregator(aggregatorKey, () => new CountAggregator<T>());
+
+            return new AggregatingContextExpression<T>(aggregatorKey, NumericMutability.Increasable);
+        }
+
         public override IExpression<T> Average(string memberName)
         {
             var aggregatorKey = String.Format("{0}.{1}", "average", memberName);

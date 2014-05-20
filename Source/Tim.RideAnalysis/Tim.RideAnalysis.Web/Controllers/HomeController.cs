@@ -67,8 +67,8 @@ namespace Tim.RideAnalysis.Web.Controllers
         public ActionResult Analyse(AnalyseViewModel model)
         {
             var matches = _analyser.SearchRide(_ride, model.Query);
-
-            model.Matches = matches.Select(m => ToMatchViewModel(m));
+            model.MatchCount = matches.Count();
+            model.Matches = matches.Select(m => ToMatchViewModel(m)).Take(10);
 
             return View(model);
         }

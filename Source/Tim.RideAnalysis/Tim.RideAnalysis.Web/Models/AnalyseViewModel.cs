@@ -11,6 +11,7 @@ namespace Tim.RideAnalysis.Web.Models
         public string Filename { get; set; }
         public string Query { get; set; }
         public IEnumerable<MatchViewModel> Matches { get; set; }
+        public int MatchCount { get; set; }
 
         public IEnumerable<string> PreviousQueries
         {

@@ -42,6 +42,7 @@
     <Compile Include="Aggregation\AggregatingContextExpression.cs" />
     <Compile Include="Aggregation\AggregatingExpressionFactory.cs" />
     <Compile Include="Aggregation\Aggregators\AverageAggregator.cs" />
+    <Compile Include="Aggregation\Aggregators\CountAggregator.cs" />
     <Compile Include="Aggregation\Aggregators\PenultimateItemAggregator.cs" />
     <Compile Include="Aggregation\Aggregators\LastItemAggregator.cs" />
     <Compile Include="Aggregation\Aggregators\MaxAggregator.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Aggregation\Aggregators\IndexedItemAggregator.cs" />
     <Compile Include="Expressions\ContextExpressions\AverageExpression.cs" />
     <Compile Include="Aggregation\CurrentVsPreviousExpression.cs" />
+    <Compile Include="Expressions\ContextExpressions\CountExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\LastItemMemberExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\MinExpression.cs" />
     <Compile Include="Expressions\ContextExpressions\FirstItemMemberExpression.cs" />
@@ -59,6 +61,7 @@
     <Compile Include="Expressions\BooleanToBooleanOperations\AbstractBooleanToBooleansOperationExpression.cs" />
     <Compile Include="Expressions\ConstantExpression.cs" />
     <Compile Include="Expressions\ContextExpression.cs" />
+    <Compile Include="Expressions\NumericToBooleanOperations\EqualsExpression.cs" />
     <Compile Include="Expressions\NumericToBooleanOperations\LessThanExpression.cs" />
     <Compile Include="Expressions\NumericToBooleanOperations\GreaterThanOrEqualToExpression.cs" />
     <Compile Include="Expressions\NumericToNumericOperations\AbstractNumericsToNumericOperationExpression.cs" />

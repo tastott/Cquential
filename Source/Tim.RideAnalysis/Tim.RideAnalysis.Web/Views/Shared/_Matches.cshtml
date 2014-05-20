@@ -1,14 +1,14 @@
-﻿@model IEnumerable<MatchViewModel>
+﻿@model AnalyseViewModel
 
 @{
     int columns = 2;
-    int rows = (Model.Count() / columns) + 1;
-    var matches = Model.ToArray();
+    int rows = (Model.MatchCount / columns) + 1;
+    var matches = Model.Matches.ToArray();
 }
 <fieldset>
     <legend>Results</legend>
     
-        <p>Found @Model.Count() matches</p>
+        <p>Found @Model.MatchCount matches</p>
     
         <table>
             @for(int r = 0; r < rows; r++)

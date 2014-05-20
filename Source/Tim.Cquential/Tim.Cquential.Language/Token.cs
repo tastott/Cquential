@@ -19,11 +19,17 @@ namespace Tim.Cquential.Language
     {
         public TokenType Type { get; set; }
         public string Value { get; set; }
+        public int ParameterCount { get; set; }
 
         public Token(TokenType type, string value)
         {
             Type = type;
             Value = value;
+        }
+
+        public override string ToString()
+        {
+            return Value;
         }
     }
 }

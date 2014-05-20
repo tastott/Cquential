@@ -11,10 +11,10 @@ namespace Tim.Cquential.Language.Tokens
 
         public TokenTreeNode[] Children { get; private set; }
 
-        public TokenTreeNode(Token token, TokenTreeNode[] children)
+        public TokenTreeNode(Token token, IEnumerable<TokenTreeNode> children)
             :base(token.Type, token.Value)
         {
-            Children = children;
+            Children = children.ToArray();
         }
 
         public TokenTreeNode(Token token, TokenTreeNode onlyChild)

@@ -56,6 +56,11 @@ namespace Tim.Cquential.Core.Expressions
             return new GreaterThanOrEqualToExpression<T>(left, right);
         }
 
+        public IExpression<T> Equals(IExpression<T> left, IExpression<T> right)
+        {
+            return new EqualsExpression<T>(left, right);
+        }
+
         #endregion
 
         #region Numeric to Numeric
@@ -99,6 +104,11 @@ namespace Tim.Cquential.Core.Expressions
             return new AverageExpression<T>(memberName);
         }
 
+        public virtual IExpression<T> Count()
+        {
+            return new CountExpression<T>();
+        }
+
         #endregion
 
         #region Other
@@ -125,6 +135,8 @@ namespace Tim.Cquential.Core.Expressions
                     return Times(left, right);
                 case "AND":
                     return And(left, right);
+                case "=":
+                    return Equals(left, right);
                 default:
                     throw new ArgumentException(String.Format("Operator '{0}' is not supported.", @operator));
             }

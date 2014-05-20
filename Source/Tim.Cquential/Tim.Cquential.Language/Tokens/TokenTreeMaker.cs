@@ -38,9 +38,9 @@ namespace Tim.Cquential.Language.Tokens
                         node = new TokenTreeNode(token);
                         break;
 
-                    case TokenType.Function:
-                        var parameter = nodes.Pop();
-                        node = new TokenTreeNode(token, parameter);
+                    case TokenType.Function: //Pop off parameters as appropriate
+                        var parameters = nodes.PopMany(token.ParameterCount);
+                        node = new TokenTreeNode(token, parameters);
                         break;
 
                     case TokenType.Operator:
@@ -60,6 +60,18 @@ namespace Tim.Cquential.Language.Tokens
                 throw new Exception("Invalid RPN token sequence");
 
             return nodes.Pop();
+        }
+    }
+
+    public static class StackExtensions
+    {
+        public static IEnumerable<T> PopMany<T>(this Stack<T> stack, int count)
+        {
+            var popped = new List<T>(count);
+
+            for (int i = 0; i < count; i++) popped.Add(stack.Pop());
+
+            return popped;
         }
     }
 }

@@ -179,6 +179,24 @@ namespace Tim.Cquential.Language
         }
 
         [TestMethod]
+        public void TokenizeIdentifiesParameterlessFunction()
+        {
+            var tokenizer = new Tokenizer();
+            string input = "BLAH()";
+
+            var tokens = tokenizer.Tokenize(input);
+
+            var expected = new TupleList<string, TokenType>
+            { 
+                {"BLAH", TokenType.Function},
+                {"(", TokenType.LeftParenthesis},
+                {")", TokenType.RightParenthesis},
+            };
+
+            AssertTokensMatch(expected, tokens);
+        }
+
+        [TestMethod]
         public void TokenizeTokenizesSomeArbitraryInput()
         {
             var tokenizer = new Tokenizer();

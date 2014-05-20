@@ -247,6 +247,26 @@ namespace Tim.Cquential.Language.Parsers
         }
 
         [TestMethod]
+        public void ParseExpressionWithCount()
+        {
+            var expressions = GetExpressionFactory<Leg>();
+            var parser = GetParser<Leg>();
+            var tokens = new Tokenizer().Tokenize("COUNT() > 2");
+            var expected =
+                expressions.GreaterThan
+                (
+                    expressions.Count(),
+                    expressions.Constant(2)
+                );
+
+            var query = parser.Parse(tokens) as ExpressionQuery<Leg>;
+
+            query.Expression
+                .Should()
+                .Be(expected);
+        }
+
+        [TestMethod]
         public void SimpleExpressionWithConstantsIsImmutable()
         {
             var parser = GetParser<Leg>();

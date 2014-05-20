@@ -18,8 +18,8 @@ namespace Tim.RideAnalysis.Console
         {
             string command = null;
 
-            ExecuteCommand("n.StartElevation > 0.StartElevation + 30");
-            //command = System.Console.ReadLine();
+            ExecuteCommand("0.Speed > 20 AND n.Speed < 5 AND COUNT() < 10 AND MIN(Speed) = n.Speed");
+            command = System.Console.ReadLine();
             //while (command != "x")
             //{
             //    if (command != null)
@@ -35,7 +35,7 @@ namespace Tim.RideAnalysis.Console
 
         private static int ExecuteCommand(string command)
         {
-            if (ride == null) ride = new Importer().ImportRideFromGpxFile(@"C:\users\tim\downloads\lunch ride.gpx");
+            if (ride == null) ride = new Importer().ImportRideFromGpxFile(@"C:\users\tim\downloads\16-05-2014 Oxford, Oxfordshire, United Kingdom.gpx");
             if (analyser == null) analyser = new Analyser();
 
             var startTime = DateTime.Now;

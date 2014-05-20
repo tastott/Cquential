@@ -17,6 +17,7 @@ namespace Tim.Cquential.Language.Parsers
     {
         protected TokenTreeMaker _tokenTreeMaker;
         protected ExpressionFactory<T> _expressions;
+        protected IDictionary<string, FunctionDefinition<T>> _functionDefs;
 
         public ExpressionQueryParser()
             : this(new TokenTreeMaker(new TokenShunter()), new ExpressionFactory<T>()) { }
@@ -29,6 +30,13 @@ namespace Tim.Cquential.Language.Parsers
         {
             _tokenTreeMaker = tokenTreeMaker;
             _expressions = expressions;
+            _functionDefs = new Dictionary<string, FunctionDefinition<T>>
+            {
+                {"MAX", new FunctionDefinition<T>(1, (x,c) => x.Max(c[0]))},
+                {"MIN", new FunctionDefinition<T>(1, (x,c) => x.Min(c[0]))},
+                {"AVG", new FunctionDefinition<T>(1, (x,c) => x.Average(c[0]))},
+                {"COUNT", new FunctionDefinition<T>(0, (x,c) => x.Count())}
+            };
         }
 
         public virtual IQuery<T> Parse(IEnumerable<Token> rpnTokens)
@@ -78,36 +86,32 @@ namespace Tim.Cquential.Language.Parsers
 
         protected IExpression<T> MakeFunctionExpression(TokenTreeNode root)
         {
-            var aggregatePattern = new Regex(@"^([A-Za-z0-9]+)$");
-            System.Text.RegularExpressions.Match match = null;
-
             string functionName = root.Value;
-            var child = root.Children.Single();
+            var parameters = root.Children.Select(x => x.Value).ToArray();
 
-            aggregatePattern.TryMatch(child.Value, out match);
-
-            switch (functionName)
+            FunctionDefinition<T> functionDef;
+            if(_functionDefs.TryGetValue(functionName, out functionDef))
             {
-                case "MAX":
-                    return _expressions.Max(match.Groups[1].Value);
-                case "MIN":
-                    return _expressions.Min(match.Groups[1].Value);
-                case "AVG":
-                    return _expressions.Average(match.Groups[1].Value);
-                //case "COUNT":
-                //    if (child.Type != TokenType.Aggregate) throw new Exception(String.Format("Cannot apply MAX function to parameter type '{0}'", child.Type.ToString()));
-                //    if(!match.Success) throw new Exception(String.Format("Cannot apply MAX function parameter '{0}'", child.Value));
-                //    return _expressions.Aggregate(functionName, match.Groups[1].Value);
+                if(parameters.Count() != functionDef.Parameters)
+                    throw new Exception(
+                        String.Format("Expected {0} parameter(s) for function '{1}' but found {2}", functionDef.Parameters, functionName, parameters.Count()));
 
-                case "ALL":
-                    var left = ParseRelativeItem(child.Children[0].Value);
-                    var right = ParseRelativeItem(child.Children[1].Value);
+                return functionDef.GetExpression(_expressions, parameters);
+            }
+            else
+            {
+                switch (functionName)
+                {
+                    case "ALL":
+                        var left = ParseRelativeItem(root.Children[0].Children[0].Value);
+                        var right = ParseRelativeItem(root.Children[0].Children[1].Value);
 
-                    return _expressions.AllTrue(child.Value, left.Item1, left.Item2, right.Item1, right.Item2);
+                        return _expressions.AllTrue(root.Children[0].Value, left.Item1, left.Item2, right.Item1, right.Item2);
 
 
-                default:
-                    throw new Exception(String.Format("Unrecognised function name: '{0}'", functionName));
+                    default:
+                        throw new Exception(String.Format("Unrecognised function name: '{0}'", functionName));
+                }
             }
         }
 
@@ -185,4 +189,22 @@ namespace Tim.Cquential.Language.Parsers
             
         }
     }
+
+    public class FunctionDefinition<T>
+    {
+        private Func<ExpressionFactory<T>, string[], IExpression<T>> _getExpression;
+
+        public FunctionDefinition(int parameters, Func<ExpressionFactory<T>, string[], IExpression<T>> getExpression)
+        {
+            Parameters = parameters;
+            _getExpression = getExpression;
+        }
+
+        public int Parameters { get; private set; }
+        public IExpression<T> GetExpression(ExpressionFactory<T> factory, string[] parameters)
+        {
+            return _getExpression(factory, parameters);
+        }
+    }
+
 }

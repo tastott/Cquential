@@ -226,6 +226,8 @@ namespace Tim.Cquential.Core.Expressions
             dict.AddMany(new string[] { "<", "<=" }, lessThan.ToBooleanMutability());
             dict.AddMany(new string[] { ">", ">=" }, lessThan.Flip().ToBooleanMutability());
 
+            var equals = Mutability<NumericMutability, bool>(4)
+                            .AddCommutative(NumericMutability.Increasable, NumericMutability.Increasable, 
             return dict;
         }
 
