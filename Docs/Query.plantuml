@@ -1,0 +1,11 @@
+@startuml
+[Query Text] -> [Infix Token Sequence] : Parse
+note left of [Query Text]: "n.Speed > 0.Speed * 2 AND COUNT() < 10"
+[Infix Token Sequence] -> [Postfix Token Sequence] : Shunt
+note right of [Infix Token Sequence]: "n.Speed", ">", "0.Speed", "*", "2", "AND", "COUNT()", "<", "10"
+[Postfix Token Sequence] -> [Expression Tree]
+[Typed API] -> [Expression Tree] : Build
+[Expression Tree] -> [Match Candidates] : Compile
+[Match Candidates] -> [Match Finder]
+[Match Finder] -> [Matches]
+@enduml
